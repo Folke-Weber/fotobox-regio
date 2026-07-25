@@ -1,53 +1,94 @@
+Perfekt, das ist das ideale Mittelmaß: kurz genug für schnelle Conversions, aber lang genug, damit der Kunde den Text kurz wahrnimmt!
+
+Hier ist der Code mit **exakt 3,5 Sekunden** Ladezeit.
+
+### Was technisch angepasst wurde:
+
+1. **Der Meta-Redirect:** Integriert als Fallback (gerundet auf 4 Sek. für ältere Browser).
+2. **Das JavaScript:** Führt die Weiterleitung absolut präzise nach **genau 3500 Millisekunden (3,5 Sekunden)** aus.
+
+---
+
+### Der fertige Code für `albstadt.html`:
+
+```html
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fotobox mieten in Albstadt | Fotoweber</title>
-    <meta name="description" content="Miete die perfekte Fotobox für dein Event in Albstadt. Ideal für Hochzeiten, Geburtstage & Firmenfeiern. Mit Sofortdruck & Online-Galerie.">
+    <title>Fotobox mieten in Albstadt | Foto Weber Haigerloch</title>
+    <meta name="description" content="Miete die perfekte Fotobox für deine Feier in Albstadt. Dein lokaler Partner Foto Weber aus Haigerloch bietet Sofortdruck, Requisiten & Top-Service.">
+    
+    <!-- Fallback-Weiterleitung -->
+    <meta http-equiv="refresh" content="4;url=https://www.fotoweber.de/selfie-boxen-foto-boxen/">
+
+    <script>
+        // Präzise Weiterleitung nach 3,5 Sekunden (3500 ms)
+        setTimeout(function() {
+            window.location.href = "https://www.fotoweber.de/selfie-boxen-foto-boxen/";
+        }, 3500);
+    </script>
+
     <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; max-width: 800px; margin: auto; }
-        header { text-align: center; padding: 40px 0; background-color: #f8f9fa; border-radius: 8px; }
-        h1 { color: #111; }
-        .btn { display: inline-block; background-color: #e63946; color: white; padding: 15px 30px; text-decoration: none; font-weight: bold; border-radius: 5px; margin-top: 20px; font-size: 1.1em; }
+        header { text-align: center; padding: 30px 20px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; }
+        h1 { color: #111; margin-bottom: 10px; }
+        .sub-header { font-size: 1.1em; color: #555; margin-bottom: 15px; }
+        .badge { display: inline-block; background-color: #0d6efd; color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9em; margin-bottom: 15px; }
+        .btn { display: inline-block; background-color: #e63946; color: white; padding: 15px 30px; text-decoration: none; font-weight: bold; border-radius: 5px; margin-top: 15px; font-size: 1.1em; }
         .btn:hover { background-color: #c1121f; }
+        .redirect-notice { background-color: #e7f5ff; border: 1px solid #a5d8ff; padding: 12px; border-radius: 6px; text-align: center; margin: 20px 0; font-size: 0.95em; }
         section { margin: 30px 0; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 8px; }
         footer { margin-top: 50px; text-align: center; font-size: 0.9em; color: #666; border-top: 1px solid #ddd; padding-top: 20px; }
     </style>
 </head>
 <body>
 
     <header>
+        <span class="badge">Foto Weber Haigerloch</span>
         <h1>Fotobox mieten in Albstadt</h1>
-        <p>Das Highlight für deine Hochzeit, Geburtstagsfeier oder dein Firmenevent im Zollernalbkreis.</p>
-        <a href="https://fotoweber.de" class="btn">Jetzt Verfügbarkeit auf fotoweber.de prüfen</a>
+        <p class="sub-header">Das Highlight für deine Hochzeit, Geburtstagsfeier oder dein Firmenevent im Zollernalbkreis.</p>
+        
+        <a href="https://www.fotoweber.de/selfie-boxen-foto-boxen/" class="btn">Jetzt Verfügbarkeit auf fotoweber.de prüfen</a>
     </header>
+
+    <div class="redirect-notice">
+        ⏱️ Du wirst in <strong>3,5 Sekunden</strong> automatisch zur Angebotseite auf <strong>fotoweber.de</strong> weitergeleitet...
+    </div>
 
     <section>
         <h2>Unvergessliche Momente für dein Event in Albstadt</h2>
-        <p>Du planst eine Feier in Albstadt, Ebingen, Tailfingen oder Umgebung? Mit der professionellen Fotobox von Fotoweber bringst du deinen Gästen riesigen Spaß und unvergessliche Erinnerungsfotos direkt zum Mitnehmen.</p>
-        <p>Egal ob Feiern im <strong>Berghaus Degerfeld</strong>, im <strong>Waldheim Albstadt</strong> oder eine Firmenfeier im Industriegebiet: Wir liefern dir das Rundum-Sorglos-Paket inklusive Requisiten, Online-Galerie und auf Wunsch mit Sofortdruck-Funktion.</p>
+        <p>Du planst eine Feier in Albstadt, Ebingen, Tailfingen oder Umgebung? Mit der professionellen Fotobox von <strong>Foto Weber aus Haigerloch</strong> bringst du deinen Gästen riesigen Spaß und unvergessliche Erinnerungsfotos direkt zum Mitnehmen.</p>
+        <p>Egal ob Feiern im Berghaus Degerfeld, im Waldheim Albstadt oder eine Firmenfeier im Industriegebiet: Wir liefern dir das Rundum-Sorglos-Paket inklusive Requisiten, Online-Galerie und auf Wunsch mit Sofortdruck-Funktion.</p>
     </section>
 
     <section>
-        <h2>Deine Vorteile mit Fotoweber in Albstadt:</h2>
+        <h2>Deine Vorteile mit Foto Weber Haigerloch in Albstadt:</h2>
         <ul>
-            <li><strong>Schnelle Lieferung & Aufbau:</strong> Direkt in Albstadt und dem gesamten Zollernalbkreis.</li>
-            <li><strong>Höchste Fotoqualität:</strong> Professionelle Kamera und Beleuchtung für gestochen scharfe Bilder.</li>
-            <li><strong>Lustige Requisiten:</strong> Brillen, Hüte und Schildchen für maximale Partystimmung.</li>
-            <li><strong>Digitale Online-Galerie:</strong> Alle Fotos nach dem Event bequem herunterladen.</li>
+            <li><strong>Lokaler Service aus Haigerloch:</strong> Schnelle Lieferung & persönlicher Aufbau direkt in Albstadt und dem gesamten Zollernalbkreis.</li>
+            <li><strong>Höchste Fotoqualität:</strong> Professionelle Spiegelreflexkamera und Studio-Beleuchtung für gestochen scharfe Bilder.</li>
+            <li><strong>Lustige Requisiten:</strong> Brillen, Hüte und Schildchen für maximale Partystimmung inklusive.</li>
+            <li><strong>Digitale Online-Galerie:</strong> Alle Fotos nach dem Event bequem und hochauflösend herunterladen.</li>
         </ul>
     </section>
 
-    <section style="text-align: center; background: #fff3bf; padding: 20px; border-radius: 8px;">
+    <section style="text-align: center; background: #fff3bf; padding: 25px; border-radius: 8px;">
         <h3>Bereit für deine Party in Albstadt?</h3>
-        <p>Sichere dir deinen Wunschtermin ganz einfach über unsere Hauptseite.</p>
-        <a href="https://fotoweber.de" class="btn">Weiter zu Fotoweber.de</a>
+        <p>Sichere dir deinen Wunschtermin ganz einfach über unsere Hauptseite von Foto Weber.</p>
+        <a href="https://www.fotoweber.de/selfie-boxen-foto-boxen/" class="btn">Weiter zu Fotoweber.de</a>
     </section>
 
     <footer>
-        <p>Ein Angebot von <strong>Fotoweber</strong> | Fotobox-Verleih für Albstadt, Balingen & den Zollernalbkreis.</p>
+        <p>Ein Angebot von <strong>Foto Weber Haigerloch</strong> | Fotobox-Verleih für Albstadt, Balingen, Rangendingen & den Zollernalbkreis.</p>
     </footer>
 
 </body>
 </html>
+
+```
+
+---
+
