@@ -167,3 +167,12 @@
 
 </body>
 </html>
+<!-- Open Graph für Social Media & WhatsApp Preview -->
+<meta property="og:title" content="Fotobox mieten im Schlosshotel Weitenburg | Foto Weber">
+<meta property="og:description" content="Profi-Fotobox & Retrobox für Ihre Hochzeit oder Ihr Event auf Schloss Weitenburg. Inkl. 10s-Sofortdruck & QR-Code-Download.">
+<meta property="og:image" content="https://www.fotoweber.de/pfad-zu-einem-schloss-oder-fotobox-bild.jpg">
+<meta property="og:url" content="https://fotobox-regio.de/weitenburg/">
+<meta property="og:type" content="website">
+
+<!-- Canonical Tag (verhindert Duplicate Content) -->
+<link rel="canonical" href="https://fotobox-regio.de/weitenburg/">
