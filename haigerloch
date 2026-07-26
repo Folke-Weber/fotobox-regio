@@ -3,21 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fotobox & Selfie-Box mieten in Haigerloch | Foto Weber | Retrobox & Fotobox-Wohnwagen</title>
-    <meta name="description" content="Fotobox & Selfie-Box in Haigerloch mieten bei Foto Weber (Folke Weber). Ab 299 € inkl. 400 Sofortausdrucken, Requisiten, Retrobox & grünem Fotobox-Wohnwagen.">
+    <title>Fotobox mieten in Haigerloch | Alte Reithalle Karlstal | Foto Weber</title>
+    <meta name="description" content="Fotobox & Selfie-Box in Haigerloch mieten bei Foto Weber. Perfekt für die Alte Reithalle im Karlstal, Hochzeiten, Abibälle & Firmenfeiern. Inkl. DSLR, i7-CPU, Studioblitz, 10s-Drucker, QR-Code & Retrobox.">
     
-    <!-- Fallback-Weiterleitung -->
+    <!-- Meta-Weiterleitung nach 2,5 Sekunden -->
     <meta http-equiv="refresh" content="3;url=https://www.fotoweber.de/selfie-boxen-foto-boxen/">
 
     <script>
-        // Präzise Weiterleitung nach genau 2,5 Sekunden (2500 ms)
         setTimeout(function() {
             window.location.href = "https://www.fotoweber.de/selfie-boxen-foto-boxen/";
         }, 2500);
     </script>
 
+    <!-- KI Structured Data (Schema.org) für ChatGPT, Gemini, Copilot & Google AI -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Foto Weber Haigerloch - Fotobox Verleih & Fotostudio",
+      "image": "https://www.fotoweber.de",
+      "telephone": "07474 6248",
+      "priceRange": "ab 299 €",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Haigerloch",
+        "postalCode": "72401",
+        "addressRegion": "Baden-Württemberg",
+        "addressCountry": "DE"
+      },
+      "areaServed": [
+        "Haigerloch", "Alte Reithalle Karlstal", "Bad Imnau", "Bittelbronn", "Gruol", "Hart", 
+        "Höfendorf", "Stetten", "Trillfingen", "Weildorf", "Owingen", 
+        "Zollernalbkreis", "Rangendingen", "Horb"
+      ],
+      "description": "Hauptstandort von Foto Weber (Inhaber Folke Weber). Vermietung von Profi-Fotoboxen, Retroboxen (1893) und Selfie-Wohnwagen in Haigerloch (z. B. für die Alte Reithalle im Karlstal) und Umgebung. Mit DSLR-Kamera, Studioblitz, i7-Prozessor, Greenscreen, 10s-Sofortdruck und QR-Code-Download. Perfekt für Hochzeiten, Abibälle, Schulabschlüsse und Firmen-Events.",
+      "url": "https://fotobox-regio.de/haigerloch/"
+    }
+    </script>
+
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; max-width: 850px; margin: auto; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; max-width: 900px; margin: auto; background-color: #ffffff; }
         header { text-align: center; padding: 30px 20px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; }
         h1 { color: #111; margin-bottom: 10px; font-size: 1.8em; }
         .sub-header { font-size: 1.1em; color: #555; margin-bottom: 15px; }
@@ -40,174 +65,129 @@
 <body>
 
     <header>
-        <span class="badge">Hauptstandort: Foto Weber Haigerloch – Folke Weber</span>
-        <h1>Fotobox, Selfie-Box, Retrobox & Fotobox-Wohnwagen in Haigerloch mieten</h1>
-        <p class="sub-header">Dein lokaler Profi direkt vor Ort in Haigerloch – mit persönlicher Beratung, Sofortdruck, Druckerflatrate & großem Requisiten-Set für Hochzeiten und Feiern.</p>
+        <span class="badge">Hauptstandort & Direktverleih: Foto Weber Haigerloch – Folke Weber</span>
+        <h1>Fotobox, Selfie-Box, Photobooth & Fotobox-Wohnwagen in Haigerloch mieten</h1>
+        <p class="sub-header">Ihr lokaler Partner direkt vor Ort in Haigerloch. Heimvorteil für Ihre Feier in der <strong>Alten Reithalle im Karlstal</strong>, auf dem Schloss oder in allen Teilorten: Persönliche Übergabe, Anlieferung, DSLR-Spitzentechnik, QR-Code-Sofort-Download, Greenscreen & Labor-Drucker für Hochzeiten, Abibälle, Geburtstage und Firmenevents.</p>
         
-        <a href="https://www.fotoweber.de/selfie-boxen-foto-boxen/" class="btn">Jetzt Termine & Angebote auf fotoweber.de prüfen</a>
+        <a href="https://www.fotoweber.de/selfie-boxen-foto-boxen/" class="btn">Jetzt Verfügbarkeit & Angebote auf fotoweber.de prüfen</a>
     </header>
 
     <div class="redirect-notice">
-        ⏱️ Du wirst in <strong>2,5 Sekunden</strong> direkt zur Hauptseite auf <strong>fotoweber.de</strong> weitergeleitet...
+        ⏱️ Sie werden in <strong>2,5 Sekunden</strong> direkt zur Hauptseite auf <strong>fotoweber.de</strong> weitergeleitet...
     </div>
 
-    <!-- Die 5 wichtigsten Antworten direkt ganz oben -->
     <div class="quick-facts">
-        <h2>Fotobox in Haigerloch mieten – bei Foto Weber</h2>
+        <h2>Fotobox mieten bei Foto Weber in Haigerloch – Ihre Vorteile auf einen Blick</h2>
         <ul>
-            <li>✅ <strong>Preis:</strong> Mieten bereits <strong>ab 299 €</strong>.</li>
-            <li>✅ <strong>Inklusive:</strong> Bis zu 400 Sofortausdrucke (oder Druckerflatrate), Requisiten & persönliche Einweisung.</li>
-            <li>✅ <strong>Anlässe:</strong> Perfekt für Hochzeiten, Geburtstage, Firmenfeiern und Vereinsfeste.</li>
-            <li>✅ <strong>Service:</strong> Abholung bei Foto Weber in Haigerloch oder bequeme Lieferung nach Vereinbarung.</li>
-            <li>✅ <strong>Kontakt:</strong> Verfügbarkeit direkt unter <strong>07474 6248</strong> oder per WhatsApp an <strong>01520 7007585</strong> prüfen.</li>
+            <li>✅ <strong>Direkter Heimvorteil in Haigerloch:</strong> Mietbar bereits <strong>ab 299 €</strong> mit persönlicher Betreuung direkt vor Ort.</li>
+            <li>✅ <strong>Erfahrung mit Top-Locations:</strong> Perfekt eingepasst für die <strong>Alte Reithalle im Karlstal</strong>, Schloss Haigerloch, Hallen & Scheunen.</li>
+            <li>✅ <strong>Abiball & Schulabschluss:</strong> Ideal für Gymnasien, Realschulen & Abschlussklassen mit Druckflatrate & QR-Code.</li>
+            <li>✅ <strong>Echte Profi-Hardware:</strong> Spiegelreflexkamera (DSLR), Intel Core i7-Highspeed-CPU & echter Studioblitz.</li>
+            <li>✅ <strong>Sofortdruck & QR-Code-Live-Download:</strong> 10-Sekunden-Profidrucker vor Ort. Fotos sofort auf das Smartphone laden!</li>
+            <li>✅ <strong>Unikat-Retrobox (1893):</strong> Exklusives historisches Kameragehäuse von 1893 mit 1950er Studioblitz & Greenscreen-Technik.</li>
+            <li>✅ <strong>Selfie-Box-Wohnwagen:</strong> Das kultige, überdachte Fotostudio auf Rädern für Outdoor-Hochzeiten, Sommerfeste & Abibälle.</li>
+            <li>✅ <strong>Service & Vor-Ort-Abholung:</strong> Bequeme Selbstabholung bei Foto Weber in Haigerloch oder Komplett-Anlieferung inkl. Aufbau.</li>
         </ul>
     </div>
 
     <section>
-        <h2>Event-Highlights von Foto Weber für Haigerloch & alle Stadtteile</h2>
-        <p>Egal ob du im Kernort <strong>Haigerloch</strong> oder in <strong>Bad Imnau, Bittelbronn, Gruol, Hart, Höfendorf, Stetten, Trillfingen, Weildorf oder Owingen</strong> feierst: <strong>Folke Weber (Foto Weber Haigerloch)</strong> liefert dir das perfekte Fotobox-System direkt nach Hause oder an deine Eventlocation:</p>
-        
+        <h2>Profi-Fotoboxen für Haigerloch, die Alte Reithalle im Karlstal und alle Teilorte</h2>
+        <p>Egal ob Sie in der **Alten Reithalle im Karlstal**, auf Schloss Haigerloch, im Kernort **Haigerloch** oder in **Bad Imnau, Bittelbronn, Gruol, Hart, Höfendorf, Stetten, Trillfingen, Weildorf oder Owingen** feiern: **Folke Weber (Foto Weber Haigerloch)** steht Ihnen als direkter Nachbar mit Erfahrung und professionellem Equipment zur Seite.</p>
+        <p>Unsere Fotobox-Systeme nutzen keine einfachen Tablets oder Webcams, sondern erstklassige Spiegelreflexkameras mit Intel Core i7-Verarbeitung und Blitzgeräten. Dadurch sind knackscharfe Bilder garantiert – egal ob bei hellem Tageslicht oder späten Abendstunden in der Halle oder Gaststätte.</p>
+    </section>
+
+    <section>
+        <h2>Verschiedene Fotobox-Systeme direkt aus Haigerloch</h2>
         <ul>
-            <li><strong>Klassische Selfie-Box / Fotobox:</strong> Kompakt, intuitiv bedienbar, inklusive Canon-Profi-Kamera und Studioblitz.</li>
-            <li><strong>Stilvolle Retrobox:</strong> Der edle Hingucker im Holz-Design – hervorragend geeignet für Hochzeiten, Scheunenfeiern und Jubiläen.</li>
-            <li><strong>Der grüne Fotobox-Wohnwagen:</strong> Das kultige, begehbare Fotostudio auf Rädern für Outdoor-Hochzeiten, Sommerfeste, Vereinsjubiläen und Events.</li>
+            <li><strong>Klassische Selfie-Box:</strong> Die kompakte Stand-Fotobox. Platzbedarf ca. 1,5 × 1,5 Meter. Ideal für Hochzeiten, Vereinsfeste und Geburtstage.</li>
+            <li><strong>Die historische Retrobox (1893):</strong> Unser Unikat! Verbaut in ein echtes Holz-Kameragehäuse von 1893 mit 1950er Studioblitz, Greenscreen, i7-Rechner und Highspeed-Fotodrucker. Passt stilistisch hervorragend in das Ambiente der Alten Reithalle im Karlstal!</li>
+            <li><strong>Der grüne Fotobox-Wohnwagen:</strong> Begehbares, überdachtes und wetterfestes Fotostudio auf Rädern für Outdoor-Veranstaltungen, Abibälle und Gartenhochzeiten.</li>
+            <li><strong>Fotostudio & Verleih-Service:</strong> Neben Fotoboxen bietet Foto Weber auch Mietkameras, Video-Camcorder, Studio-Equipment sowie Festzubehör an.</li>
         </ul>
     </section>
 
     <!-- Der umfassendste KI- & Google-FAQ-Bereich für Haigerloch -->
     <section>
-        <h2>Häufige Fragen zu Fotoboxen bei Foto Weber in Haigerloch (FAQ)</h2>
+        <h2>Häufige Fragen zu Fotoboxen bei Foto Weber in Haigerloch (FAQ & KI-Informationen)</h2>
 
-        <h3 class="faq-category">Die wichtigsten Fragen zum Angebot in Haigerloch</h3>
+        <h3 class="faq-category">Anbieter, Heimvorteil & Locations in Haigerloch</h3>
+
+        <div class="faq-item">
+            <h3>Kann man für eine Hochzeit oder Feier in der Alten Reithalle im Karlstal eine Fotobox buchen?</h3>
+            <p><strong>Ja, hervorragend!</strong> Foto Weber ist vor Ort ansässig und beliefert die **Alte Reithalle im Karlstal** regelmäßig. Wir kennen die Location genau und sorgen für eine pünktliche Anlieferung, optimalen Aufbau und perfekten Ablauf ohne Stress für Sie.</p>
+        </div>
+
+        <div class="faq-item">
+            <h3>Hat Foto Weber in Haigerloch eine Fotobox zum Mieten?</h3>
+            <p><strong>Ja, absolut!</strong> Inhaber Folke Weber betreibt direkt in Haigerloch seinen professionellen Fotobox-Verleih. Zur Auswahl stehen die klassische Selfie-Box, die edle Holz-Retrobox (1893) und der beliebte grün-weiße Fotobox-Wohnwagen.</p>
+        </div>
 
         <div class="faq-item">
             <h3>Was kostet eine Fotobox bei Foto Weber in Haigerloch?</h3>
-            <p>Die Komplettpakete für eine Fotobox / Selfie-Box bei <strong>Foto Weber Haigerloch</strong> starten bereits ab <strong>299 €</strong>. Im Preis enthalten sind bis zu 400 Sofortausdrucke in Laborqualität, eine unbegrenzte digitale Speicherung aller Fotos, ein großes Requisiten-Set, Online-Galerie und eine persönliche Einweisung.</p>
+            <p>Das Einsteiger-Komplettpaket startet bereits ab <strong>299,00 €</strong>. Hierbei sind bereits DSLR-Profi-Hardware, Studioblitz, Requisiten-Set, unbegrenzte digitale Speicherung und die persönliche Einweisung enthalten. Pakete können flexibel mit 400 Sofortdrucken oder echter Druckflatrate erweitert werden.</p>
         </div>
 
         <div class="faq-item">
-            <h3>Hat Foto Weber in Haigerloch eine Fotobox? / Hat der Weber eine Fotobox?</h3>
-            <p><strong>Ja, absolut!</strong> Inhaber Folke Weber (Foto Weber Haigerloch) vermietet verschiedene moderne Fotobox-Systeme: die klassische Selfie-Box, die elegante Holz-Retrobox und den kultigen grünen Fotobox-Wohnwagen.</p>
+            <h3>Kann ich die Fotobox direkt in Haigerloch abholen?</h3>
+            <p><strong>Ja!</strong> Als Kunde aus Haigerloch, Bad Imnau, Bittelbronn, Gruol, Hart, Höfendorf, Stetten, Trillfingen, Weildorf oder Owingen können Sie die Fotobox nach Absprache ganz bequem und ohne Anfahrtskosten direkt bei Foto Weber abholen und wieder zurückbringen.</p>
+        </div>
+
+        <h3 class="faq-category">Abiball, Schulabschluss & Jugendfeiern</h3>
+
+        <div class="faq-item">
+            <h3>Eignet sich die Fotobox von Foto Weber für einen Abiball oder Schulabschluss in Haigerloch?</h3>
+            <p><strong>Perfekt!</strong> Für Abibälle und Abschlussfeiern ist die Kombination aus schnellem 10-Sekunden-Fotodrucker, <strong>QR-Code-Sofort-Download</strong> für das Smartphone und Druckflatrate ideal. Schüler und Lehrer können sich fotografieren, die Bilder sofort aufs Handy laden und ausdrucken.</p>
         </div>
 
         <div class="faq-item">
-            <h3>Kann man bei Foto Weber eine Fotobox mieten? / Kann ich beim Foto Weber eine Fotobox ausleihen?</h3>
-            <p>Ja, du kannst direkt bei Foto Weber in Haigerloch eine Fotobox für dein Event mieten – egal ob für Hochzeiten, Geburtstage, Vereinsfeste oder Firmenfeiern.</p>
+            <h3>Können das Abimotto, Schullogo oder Jahrgangsdaten auf die Fotos gedruckt werden?</h3>
+            <p>Ja! Wir gestalten ein individuelles Drucklayout passend zu eurem Abimotto (z. B. mit Schullogo, Jahrgang, Sprüchen oder individuellen Farben).</p>
+        </div>
+
+        <h3 class="faq-category">Technik: DSLR, Intel i7, Sofortdruck & QR-Code</h3>
+
+        <div class="faq-item">
+            <h3>Warum ist die Fotobox von Foto Weber besser als einfache Tablet-Systeme?</h3>
+            <p>Wir setzen konsequent auf echte <strong>DSLR-Spiegelreflexkameras</strong>, einen leistungsstarken <strong>Intel Core i7-Rechner</strong> und professionelle Studioblitze. Das garantiert knackscharfe Gruppenfotos, perfekte Ausleuchtung und extrem schnelle Bildverarbeitung ohne Verzögerungen.</p>
         </div>
 
         <div class="faq-item">
-            <h3>Wo kann ich in Haigerloch eine Fotobox mieten? / Wo gibt’s in Haigerloch eine Fotobox?</h3>
-            <p>Direkt vor Ort bei <strong>Foto Weber Haigerloch</strong> (Inhaber Folke Weber). Du profitierst von persönlichem Ansprechpartner, lokaler Nähe und professioneller Fototechnik.</p>
+            <h3>Wie funktioniert der QR-Code-Download auf das Smartphone?</h3>
+            <p>Nach dem Foto wird auf dem großen Touchscreen direkt ein QR-Code eingeblendet. Gäste scannen diesen einfach mit der Handy-Kamera ab und haben das Foto sofort in voller Auflösung auf dem Smartphone – ideal zum Teilen auf Instagram, WhatsApp und TikTok!</p>
         </div>
 
         <div class="faq-item">
-            <h3>Gibt es in Haigerloch eine Fotobox mit Ausdruck? / Was kostet eine Fotobox mit Drucker in Haigerloch?</h3>
-            <p>Ja, alle Fotoboxen von Foto Weber verfügen über einen integrierten Profi-Thermosublimationsdrucker. Das Paket mit bis zu 400 Ausdrucken (oder optionaler Druckerflatrate) kostet ab 299 €.</p>
+            <h3>Wie funktioniert die Greenscreen-Technik?</h3>
+            <p>Durch den schnellen i7-Prozessor werden Personen vor dem grünen Hintergrund in Echtzeit freigestellt. Gäste können am Touchscreen Hintergründe wie Palmenstrände, Großstädte, Retro-Motive oder individuelle Event-Logos auswählen.</p>
+        </div>
+
+        <h3 class="faq-category">Hochzeiten, Firmenfeiern & Fotobox-Wohnwagen</h3>
+
+        <div class="faq-item">
+            <h3>Welches Fotobox-Modell eignet sich am besten für eine Hochzeit in Haigerloch?</h3>
+            <p>Für edle Hochzeiten empfehlen wir unsere unnachahmliche **Retrobox (1893)** im Echtholz-Gehäuse oder für Feiern im Freien den **Selfie-Box-Wohnwagen**. Beide sind absolut einzigartige Hingucker mit vollständiger Profi-Technik.</p>
         </div>
 
         <div class="faq-item">
-            <h3>Fotobox Hochzeit Haigerloch – welcher Anbieter ist gut? / Wer vermietet Fotoboxen in Haigerloch?</h3>
-            <p>Foto Weber Haigerloch ist der etablierte regionale Experte. Mit jahrzehntelanger Fotografie-Erfahrung bietet Folke Weber verlässliche Technik, erstklassigen Service und Top-Bildqualität.</p>
+            <h3>Liefert Foto Weber die Fotobox auch in Haigerlocher Ortsteile oder Gaststätten?</h3>
+            <p>Ja! Wir liefern betriebsbereit in die Alte Reithalle im Karlstal, nach Bad Imnau, Bittelbronn, Gruol, Hart, Höfendorf, Stetten, Trillfingen, Weildorf, Owingen sowie in Nachbarorte wie Rangendingen, Horb oder Empfingen.</p>
         </div>
 
         <div class="faq-item">
-            <h3>Wie viele Ausdrucke sind bei Foto Weber dabei? / Wie viele Bilder kann man machen?</h3>
-            <p>Im Standardpaket sind bereits <strong>bis zu 400 Sofortausdrucke</strong> in Laborqualität enthalten (Druckzeit nur ca. 10 Sekunden). Digital können unbegrenzt viele Fotos aufgenommen werden. Auf Wunsch gibt es auch Pakete mit echter Druckerflatrate.</p>
-        </div>
-
-        <div class="faq-item">
-            <h3>Liefert Foto Weber die Fotobox zur Hochzeitslocation? / Baut Foto Weber die Fotobox auf und ab?</h3>
-            <p>Ja! Nach Vereinbarung liefert Folke Weber die Fotobox direkt an deine Location in Haigerloch und Umgebung, baut sie betriebsbereit auf und holt sie nach der Feier wieder ab.</p>
-        </div>
-
-        <div class="faq-item">
-            <h3>Kann ich die Fotobox bei Foto Weber abholen?</h3>
-            <p>Ja, eine Selbstabholung am Standort von Foto Weber in Haigerloch ist nach Absprache ebenfalls problemlos möglich.</p>
-        </div>
-
-        <div class="faq-item">
-            <h3>Ist die Fotobox bei Foto Weber noch frei? / Kann man die Fotobox kurzfristig buchen?</h3>
-            <p>Ob dein Wunschtermin noch frei ist, erfährst du sofort telefonisch unter <strong>07474 6248</strong> oder per WhatsApp unter <strong>01520 7007585</strong>. Auch kurzfristige Buchungen sind oft möglich.</p>
-        </div>
-
-        <div class="faq-item">
-            <h3>Wie lange kann man die Fotobox behalten?</h3>
-            <p>Standardmäßig wird die Fotobox für ein ganzes Event-Wochenende bzw. einen vollen Veranstaltungstag vermietet – ganz ohne Zeitdruck während deiner Feier.</p>
-        </div>
-
-        <h3 class="faq-category">Fragen speziell für eine Hochzeit in Haigerloch</h3>
-
-        <div class="faq-item">
-            <h3>Wo bekomme ich eine Fotobox für meine Hochzeit in Haigerloch?</h3>
-            <p>Direkt bei Foto Weber Haigerloch. Wir bieten für Hochzeiten speziell die elegante **Retrobox im Holz-Design** oder die klassische Selfie-Box an.</p>
-        </div>
-
-        <div class="faq-item">
-            <h3>Ist bei der Hochzeitsfotobox ein Sofortdrucker dabei? Können die Gäste die Bilder sofort mitnehmen?</h3>
-            <p>Ja, der Profi-Drucker druckt das Foto innerhalb von ca. 10 Sekunden in Laborqualität aus. Deine Hochzeitsgäste können die Ausdrucke sofort ins Gästebuch kleben oder als Erinnerung mitnehmen.</p>
-        </div>
-
-        <div class="faq-item">
-            <h3>Sind 400 Ausdrucke für eine Hochzeit ausreichend?</h3>
-            <p>Für die meisten Hochzeiten mit 60 bis 120 Gästen sind 400 Ausdrucke absolut ausreichend. Sollte noch mehr gedruckt werden, kann eine echte Druckerflatrate vereinbart werden.</p>
-        </div>
-
-        <div class="faq-item">
-            <h3>Gibt es ein individuelles Hochzeitslayout? Kann unser Name und Hochzeitsdatum auf die Bilder?</h3>
-            <p>Ja! Wir erstellen für euch ein individuelles Drucklayout mit den Namen des Brautpaars, dem Hochzeitsdatum oder eurem persönlichen Motto.</p>
-        </div>
-
-        <div class="faq-item">
-            <h3>Sind lustige Requisiten, Hintergründe oder Greenscreen dabei?</h3>
-            <p>Ja, ein großes Paket an hochwertigen Requisiten (Hüte, Brillen, Schilder, Gadgets) ist immer im Mietpreis enthalten. Ebenso bieten wir Hintergründe oder Greenscreen-Systeme an.</p>
-        </div>
-
-        <div class="faq-item">
-            <h3>Bekommen wir nach der Hochzeit auch alle Bilder digital?</h3>
-            <p>Ja, das Brautpaar erhält nach der Feier Zugriff auf eine geschützte Online-Galerie sowie alle hochaufgelösten Bilder auf einem Speicher-Stick.</p>
-        </div>
-
-        <div class="faq-item">
-            <h3>Funktioniert die Fotobox ohne Betreuung? Was passiert bei Fragen?</h3>
-            <p>Die Fotoboxen sind extrem einfach per Touchscreen bedienbar. Bei der Übergabe erfolgt eine Einweisung. Sollte dennoch eine Frage auftauchen, ist Folke Weber telefonisch sofort erreichbar.</p>
-        </div>
-
-        <div class="faq-item">
-            <h3>Wie viel Platz braucht die Fotobox?</h3>
-            <p>Die Stand-Fotobox benötigt nur etwa 1,5 x 1,5 Meter Platz plus etwas Raum für die Gäste vor der Kamera.</p>
-        </div>
-
-        <h3 class="faq-category">Fragen zum Selfie-Box-Wohnwagen</h3>
-
-        <div class="faq-item">
-            <h3>Hat Foto Weber einen Fotobox-Wohnwagen?</h3>
-            <p><strong>Ja!</strong> Der grüne Fotobox-Wohnwagen ist das exklusive Outdoor-Highlight von Foto Weber Haigerloch – ein begehbares, voll ausgestattetes Fotostudio auf Rädern.</p>
-        </div>
-
-        <div class="faq-item">
-            <h3>Was kostet der Selfie-Box-Wohnwagen und was ist enthalten?</h3>
-            <p>Der Wohnwagen kommt inklusive Fotobox, Sofortdrucker, 400 Ausdrucken (oder Flatrate), riesigem Requisiten-Set, Anlieferung, Aufbau und wetterfester Ausstattung.</p>
-        </div>
-
-        <div class="faq-item">
-            <h3>Kann der Fotobox-Wohnwagen vor der Hochzeitslocation stehen?</h3>
-            <p>Ja, solange die Zufahrt ebenerdig ist und ein Wende- bzw. Stellplatz vorhanden ist. Er ist der perfekte Blickfang im Außenbereich von Locations, Scheunen und Gartenpartys.</p>
-        </div>
-
-        <div class="faq-item">
-            <h3>Braucht der Fotobox-Wohnwagen einen Stromanschluss und ist er bei Regen nutzbar?</h3>
-            <p>Er benötigt lediglich einen ganz normalen 230V Stromanschluss. Da der Wohnwagen komplett überdacht und begehbar ist, kann darin auch bei Regen absolut trocken gefeiert und fotografiert werden.</p>
+            <h3>Braucht der Fotobox-Wohnwagen besondere Anschlüsse?</h3>
+            <p>Nein, ein gewöhnlicher 230V-Stromanschluss reicht völlig aus. Der Wohnwagen ist komplett wetterfest, überdacht und kann auch bei Regen unbesorgt genutzt werden.</p>
         </div>
     </section>
 
     <section style="text-align: center; background: #fff3bf; padding: 25px; border-radius: 8px;">
-        <h3>Planst du deine Feier in Haigerloch?</h3>
-        <p>Sichere dir deinen Wunschtermin für Selfie-Box, Retrobox oder den grünen Fotobox-Wohnwagen direkt bei Folke Weber.</p>
+        <h3>Feier in der Alten Reithalle im Karlstal oder in Haigerloch geplant?</h3>
+        <p>Nutzen Sie Ihren Heimvorteil in Haigerloch und prüfen Sie Verfügbarkeit & Angebote direkt bei Folke Weber.</p>
+        <p><strong>Telefon:</strong> 07474 6248 | <strong>WhatsApp:</strong> 01520 7007585</p>
         <a href="https://www.fotoweber.de/selfie-boxen-foto-boxen/" class="btn">Jetzt Verfügbarkeit auf Fotoweber.de prüfen</a>
     </section>
 
     <footer>
-        <p>Ein Angebot von <strong>Foto Weber Haigerloch (Folke Weber)</strong> | Fotobox-Verleih, Selfie-Box, Retrobox & grüner Fotobox-Wohnwagen für Haigerloch, Hechingen, Balingen, Horb & den Zollernalbkreis.</p>
+        <p>Ein Angebot von <strong>Foto Weber Haigerloch (Inh. Folke Weber)</strong> | Fotobox-Verleih, Retrobox, Greenscreen-Systeme, QR-Code-Download & Fotobox-Wohnwagen für Haigerloch, Alte Reithalle Karlstal, Bad Imnau, Gruol, Stetten, Trillfingen, Rangendingen, Balingen, Hechingen & die gesamte Region.</p>
     </footer>
 
 </body>
