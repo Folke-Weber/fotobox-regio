@@ -1,1582 +1,1413 @@
-<?php
-declare(strict_types=1);
-session_start();
-
-const EMPFAENGER = 'foto-weber-haigerloch@t-online.de';
-const FORM_ID = 'fotobox-rottweil-2026';
-
-$status = '';
-$error_message = '';
-
-$name = '';
-$email = '';
-$telefon = '';
-$datum = '';
-$ort = 'Rottweil';
-$box = '';
-$anlass = '';
-$gaeste = '';
-$nachricht = '';
-
-function post_value(string $key, int $max = 500): string {
-    $value = $_POST[$key] ?? '';
-    if (!is_string($value)) {
-        return '';
-    }
-
-    $value = trim($value);
-    $value = str_replace(["\0", "\r"], '', $value);
-
-    if (function_exists('mb_strlen') && mb_strlen($value, 'UTF-8') > $max) {
-        $value = mb_substr($value, 0, $max, 'UTF-8');
-    } elseif (strlen($value) > $max) {
-        $value = substr($value, 0, $max);
-    }
-
-    return $value;
-}
-
-function h(string $value): string {
-    return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-}
-
-if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
-
-    $name = post_value('name', 100);
-    $email = str_replace(["\r", "\n"], '', post_value('email', 160));
-    $telefon = post_value('telefon', 50);
-    $datum = post_value('datum', 30);
-    $ort = post_value('ort', 120);
-    $box = post_value('box', 80);
-    $anlass = post_value('anlass', 80);
-    $gaeste = post_value('gaeste', 20);
-    $nachricht = post_value('nachricht', 3000);
-
-    $stadt = post_value('stadt', 80);
-    $quelle = post_value('quelle', 120);
-    $datenschutz = post_value('datenschutz', 20);
-    $honeypot = post_value('website', 200);
-    $form_id = post_value('form_id', 100);
-
-    if ($honeypot !== '') {
-        $status = 'success';
-    } elseif ($form_id !== FORM_ID) {
-        $status = 'error';
-        $error_message = 'Das Formular konnte nicht eindeutig zugeordnet werden. Bitte laden Sie die Seite neu und versuchen Sie es noch einmal.';
-    } elseif ($name === '') {
-        $status = 'error';
-        $error_message = 'Bitte tragen Sie Ihren Namen ein.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $status = 'error';
-        $error_message = 'Bitte tragen Sie eine gültige E-Mail-Adresse ein.';
-    } elseif ($datenschutz !== 'ja') {
-        $status = 'error';
-        $error_message = 'Bitte bestätigen Sie die Datenschutz-Zustimmung.';
-    } else {
-        $now = time();
-        $last = isset($_SESSION['fotobox_form_last']) ? (int)$_SESSION['fotobox_form_last'] : 0;
-
-        if ($last > 0 && ($now - $last) < 20) {
-            $status = 'error';
-            $error_message = 'Bitte warten Sie einen kurzen Moment, bevor Sie das Formular erneut absenden.';
-        } else {
-            if ($stadt === '') {
-                $stadt = 'Rottweil';
-            }
-
-            $subject_parts = ['Fotobox-Anfrage aus '.$stadt];
-
-            if ($anlass !== '') {
-                $subject_parts[] = $anlass;
-            }
-
-            if ($datum !== '') {
-                $subject_parts[] = $datum;
-            }
-
-            $subject = implode(' – ', $subject_parts);
-
-            if (function_exists('mb_encode_mimeheader')) {
-                $mail_subject = mb_encode_mimeheader($subject, 'UTF-8', 'B', "\r\n");
-            } else {
-                $mail_subject = $subject;
-            }
-
-            $lines = [
-                'Neue Fotobox-Anfrage',
-                '=====================',
-                '',
-                'Landingpage / Stadt: '.$stadt,
-                'Quelle: '.($quelle !== '' ? $quelle : 'Fotobox-Regio Rottweil'),
-                '',
-                'Name: '.$name,
-                'E-Mail: '.$email,
-                'Telefon: '.($telefon !== '' ? $telefon : 'nicht angegeben'),
-                'Veranstaltungsdatum: '.($datum !== '' ? $datum : 'nicht angegeben'),
-                'Veranstaltungsort: '.($ort !== '' ? $ort : 'nicht angegeben'),
-                'Fotobox: '.($box !== '' ? $box : 'noch nicht ausgewählt'),
-                'Anlass: '.($anlass !== '' ? $anlass : 'nicht angegeben'),
-                'Gästezahl: '.($gaeste !== '' ? $gaeste : 'nicht angegeben'),
-                '',
-                'Nachricht:',
-                $nachricht !== '' ? $nachricht : 'keine zusätzliche Nachricht',
-                '',
-                'Datenschutz-Zustimmung: ja',
-                'Übermittelt am: '.date('d.m.Y H:i:s')
-            ];
-
-            $mail_text = implode("\r\n", $lines);
-
-            $headers = [
-                'MIME-Version: 1.0',
-                'Content-Type: text/plain; charset=UTF-8',
-                'From: Foto Weber Fotobox-Formular <webformular@fotobox-regio.de>',
-                'Reply-To: '.$email,
-                'X-Mailer: PHP/'.phpversion()
-            ];
-
-            $sent = @mail(
-                EMPFAENGER,
-                $mail_subject,
-                $mail_text,
-                implode("\r\n", $headers)
-            );
-
-            if ($sent) {
-                $_SESSION['fotobox_form_last'] = $now;
-                $status = 'success';
-
-                // Clear fields after successful send.
-                $name = $email = $telefon = $datum = $box = $anlass = $gaeste = $nachricht = '';
-                $ort = 'Rottweil';
-            } else {
-                $status = 'error';
-                $error_message = 'Der Webserver hat den E-Mail-Versand nicht bestätigt. Bitte versuchen Sie es später erneut oder kontaktieren Sie Foto Weber direkt.';
-            }
-        }
-    }
-}
-?>
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Fotobox mieten Rottweil | Hochzeit, Firmenfeier & Fotobox mit Drucker | Foto Weber</title>
-    <meta name="description" content="Fotobox mieten in Rottweil: Selfie-Box, Retrobox (1893) und Fotobox-Wohnwagen für Hochzeit, Geburtstag, Firmenfeier und Messe. Mit Drucker, Sofortdruck, KI-/AI-Hintergrund und Greenscreen.">
-
-    <meta property="og:title" content="Fotobox mieten in Rottweil | Foto Weber">
-    <meta property="og:description" content="Selfie-Box, Retrobox (1893) und Fotobox-Wohnwagen für Hochzeit, Geburtstag, Firmenfeier und Messe in Rottweil und Umgebung.">
-    <meta property="og:image" content="https://www.fotoweber.de/selfie-boxen-foto-boxen/">
-    <meta property="og:url" content="https://fotobox-regio.de/rottweil/">
-    <meta property="og:type" content="website">
-
-    <link rel="canonical" href="https://fotobox-regio.de/rottweil/">
-
-    <script type="application/ld+json">
-    [
-      {
-        "@context": "https://schema.org",
-        "@type": "LocalBusiness",
-        "name": "Foto Weber - Fotobox mieten Rottweil",
-        "telephone": "07474 6248",
-        "priceRange": "ab 299 €",
-        "url": "https://fotobox-regio.de/rottweil/",
-        "areaServed": [
-          "Rottweil",
-          "Göllsdorf",
-          "Feckenhausen",
-          "Neukirch",
-          "Zepfenhan",
-          "Hausen ob Rottweil",
-          "Kreis Rottweil"
-        ],
-        "description": "Fotobox-Verleih für Rottweil mit Selfie-Box, historischer Retrobox (1893) und Fotobox-Wohnwagen. Für Hochzeit, Geburtstag, Firmenfeier und Messe."
-      },
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "Wo kann ich eine Fotobox für Hochzeit, Geburtstag oder Firmenfeier in Rottweil mieten?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Bei Foto Weber können Sie Selfie-Boxen, die historische Retrobox (1893) sowie den Fotobox-Wohnwagen für Rottweil und die gesamte Region mieten."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Wie hoch sind die Fotobox Kosten bzw. der Fotobox mieten Preis in Rottweil?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Die Fotobox-Pakete von Foto Weber starten ab 299,00 Euro. Je nach System und Ausstattung sind Sofortdruck, digitale Flatrate, Aufbau und weitere Leistungen möglich."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Bieten Sie eine Fotobox mit Drucker für Sofortdrucke vor Ort an?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Ja. Die Fotobox-Systeme können mit Highspeed-Fotodruckern für Sofortausdrucke in professioneller Fotoqualität ausgestattet werden."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Wie funktionieren KI Fotobox, AI Hintergrund und Greenscreen?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Mit Greenscreen und KI- beziehungsweise AI-Hintergründen können Motive digital ausgetauscht und an Hochzeit, Firmenfeier oder Event angepasst werden."
-            }
-          }
-        ]
-      }
-    ]
-    </script>
-
-    <style>
-        :root {
-            --blau: #0b79b7;
-            --blau-dunkel: #075d8e;
-            --blau-hell: #eaf6fd;
-            --orange: #eb4b00;
-            --orange-dunkel: #cf4100;
-            --gruen: #77bd00;
-            --text: #22272b;
-            --grau: #5f6870;
-            --linie: #e6edf2;
-            --weiss: #ffffff;
-            --schatten: 0 16px 38px rgba(20,55,80,.10);
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            color: var(--text);
-            background: #fff;
-            overflow-x: hidden;
-        }
-
-        img {
-            max-width: 100%;
-            display: block;
-        }
-
-        a {
-            color: inherit;
-        }
-
-        .topline {
-            background: #eef5f8;
-            border-bottom: 1px solid #e2ebef;
-            padding: 8px 15px;
-            display: flex;
-            justify-content: center;
-            gap: 32px;
-            flex-wrap: wrap;
-            font-size: 12px;
-            color: #52616a;
-        }
-
-        .topline span::before {
-            content: "✓";
-            color: var(--blau);
-            font-weight: bold;
-            margin-right: 6px;
-        }
-
-        .nav {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            background: rgba(255,255,255,.96);
-            border-bottom: 1px solid var(--linie);
-        }
-
-        .nav-inner {
-            max-width: 1180px;
-            margin: auto;
-            min-height: 82px;
-            padding: 0 22px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-        }
-
-        .brand {
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-logo {
-            width: 58px;
-            height: 48px;
-            border-radius: 7px;
-            background: linear-gradient(145deg,#2578aa,#84bee6);
-            color: white;
-            display: grid;
-            place-items: center;
-            font-size: 20px;
-            font-weight: 900;
-        }
-
-        .brand-text strong {
-            display: block;
-            color: var(--blau-dunkel);
-            font-size: 23px;
-            line-height: 1;
-        }
-
-        .brand-text small {
-            display: block;
-            margin-top: 4px;
-            color: #6b7881;
-            font-weight: 700;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 22px;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 700;
-            color: #34434c;
-        }
-
-        .nav-links a:hover {
-            color: var(--blau);
-        }
-
-        .nav-button {
-            background: var(--orange);
-            color: white;
-            text-decoration: none;
-            padding: 14px 24px;
-            border-radius: 999px;
-            font-weight: 900;
-            white-space: nowrap;
-        }
-
-        .nav-button:hover {
-            background: var(--orange-dunkel);
-        }
-
-        .hero {
-            position: relative;
-            overflow: hidden;
-            background: white;
-        }
-
-        .hero::after {
-            content: "";
-            position: absolute;
-            left: -60px;
-            right: -60px;
-            bottom: 18px;
-            height: 90px;
-            background-image: radial-gradient(circle, rgba(119,189,0,.18) 3px, transparent 4px);
-            background-size: 34px 34px;
-            transform: rotate(-3deg);
-        }
-
-        .hero-inner {
-            max-width: 1180px;
-            margin: auto;
-            padding: 72px 22px 110px;
-            display: grid;
-            grid-template-columns: 1.03fr .97fr;
-            gap: 42px;
-            align-items: center;
-            position: relative;
-            z-index: 2;
-        }
-
-        .kicker {
-            display: inline-block;
-            background: var(--blau-hell);
-            color: var(--blau-dunkel);
-            border-radius: 999px;
-            padding: 9px 15px;
-            font-size: 13px;
-            font-weight: 900;
-            margin-bottom: 14px;
-        }
-
-        .hero h1 {
-            margin: 0 0 22px;
-            font-size: clamp(42px,6vw,72px);
-            line-height: .98;
-            letter-spacing: -2px;
-            font-weight: 900;
-        }
-
-        .hero h1 .blauzeile {
-            display: table;
-            background: var(--blau);
-            color: white;
-            padding: 4px 10px 6px;
-            margin: 5px 0;
-        }
-
-        .hero h1 .normal {
-            color: #26323a;
-        }
-
-        .hero p {
-            margin: 0 0 26px;
-            max-width: 620px;
-            color: #56646c;
-            font-size: 18px;
-            line-height: 1.55;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .btn-primary,
-        .btn-secondary {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 54px;
-            padding: 0 24px;
-            border-radius: 999px;
-            text-decoration: none;
-            font-weight: 900;
-        }
-
-        .btn-primary {
-            background: var(--orange);
-            color: white;
-            box-shadow: 0 12px 26px rgba(235,75,0,.23);
-        }
-
-        .btn-secondary {
-            background: white;
-            color: var(--blau-dunkel);
-            border: 2px solid #d8e8f2;
-        }
-
-        .hero-bild {
-            position: relative;
-            min-height: 500px;
-            display: grid;
-            place-items: center;
-        }
-
-        .hero-kreis {
-            position: absolute;
-            width: 430px;
-            height: 430px;
-            border-radius: 50%;
-            background: #eff5e5;
-            right: 5px;
-            top: 18px;
-        }
-
-        .bildkarte {
-            width: min(500px,95%);
-            position: relative;
-            z-index: 3;
-            border: 8px solid white;
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: var(--schatten);
-        }
-
-        .bildkarte img {
-            width: 100%;
-            height: 380px;
-            object-fit: cover;
-            object-position: 30% center;
-        }
-
-        .preis {
-            position: absolute;
-            text-decoration: none;
-            cursor: pointer;
-            transition: transform .22s ease, box-shadow .22s ease;
-            left: -18px;
-            bottom: 20px;
-            z-index: 5;
-            width: 165px;
-            height: 165px;
-            border-radius: 50%;
-            background: rgba(62,145,197,.96);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            border: 7px solid rgba(255,255,255,.22);
-            box-shadow: 0 12px 28px rgba(44,111,156,.25);
-            transform: rotate(4deg);
-        }
-
-        .preis small {
-            font-size: 14px;
-        }
-
-        .preis strong {
-            font-size: 43px;
-            line-height: 1;
-        }
-
-        .preis span {
-            margin-top: 5px;
-            font-size: 11px;
-            font-weight: 900;
-        }
-
-        .preis:hover,
-        .preis:focus-visible {
-            transform: rotate(4deg) scale(1.06);
-            box-shadow: 0 18px 36px rgba(44,111,156,.34);
-            outline: none;
-        }
-
-        .orange-label,
-        .gruen-label {
-            position: absolute;
-            right: 0;
-            z-index: 5;
-            color: white;
-            border-radius: 999px;
-            font-weight: 900;
-        }
-
-        .orange-label {
-            top: 48px;
-            background: var(--orange);
-            padding: 10px 20px;
-            font-size: 13px;
-        }
-
-        .gruen-label {
-            top: 94px;
-            right: 18px;
-            background: var(--gruen);
-            padding: 8px 18px;
-            font-size: 12px;
-        }
-
-        .vorteil-leiste {
-            max-width: 1350px;
-            margin: -38px auto 38px;
-            padding: 0 15px;
-            position: relative;
-            z-index: 4;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            transform: rotate(-3deg);
-        }
-
-        .vorteil {
-            color: white;
-            padding: 11px 22px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 900;
-        }
-
-        .vorteil:nth-child(odd) {
-            background: var(--gruen);
-        }
-
-        .vorteil:nth-child(even) {
-            background: var(--orange);
-        }
-
-        .section {
-            max-width: 1180px;
-            margin: auto;
-            padding: 74px 22px;
-        }
-
-        .center {
-            text-align: center;
-        }
-
-        .eyebrow {
-            color: var(--orange);
-            font-weight: 900;
-            font-size: 18px;
-            margin-bottom: 8px;
-        }
-
-        .section h2 {
-            margin: 0 0 15px;
-            font-size: clamp(30px,4vw,46px);
-            line-height: 1.08;
-        }
-
-        .lead {
-            max-width: 860px;
-            margin: 0 auto;
-            color: var(--grau);
-            font-size: 17px;
-            line-height: 1.65;
-        }
-
-        .feature-grid {
-            margin-top: 42px;
-            display: grid;
-            grid-template-columns: repeat(3,1fr);
-            gap: 24px;
-        }
-
-        .feature {
-            text-align: left;
-            display: grid;
-            grid-template-columns: 56px 1fr;
-            gap: 16px;
-        }
-
-        .icon {
-            width: 54px;
-            height: 54px;
-            border-radius: 50%;
-            display: grid;
-            place-items: center;
-            background: #f6f8f9;
-            color: var(--orange);
-            font-size: 26px;
-            font-weight: 900;
-        }
-
-        .feature h3 {
-            margin: 2px 0 5px;
-            font-size: 19px;
-        }
-
-        .feature p {
-            margin: 0;
-            color: #66727a;
-            line-height: 1.45;
-        }
-
-        .boxen {
-            background: #fbfdfe;
-            border-top: 1px solid #edf2f5;
-            border-bottom: 1px solid #edf2f5;
-        }
-
-        .box-grid {
-            margin-top: 38px;
-            display: grid;
-            grid-template-columns: repeat(3,1fr);
-            gap: 24px;
-        }
-
-        .box-card {
-            background: white;
-            border: 1px solid #e4edf2;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 12px 30px rgba(22,61,84,.08);
-            text-align: left;
-        }
-
-        .box-card img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-        }
-
-        .box-card .body {
-            padding: 24px;
-        }
-
-        .box-card h3 {
-            margin: 0 0 10px;
-            font-size: 22px;
-        }
-
-        .box-card p {
-            margin: 0;
-            color: #5e6a72;
-            line-height: 1.6;
-        }
-
-        .trend-grid {
-            margin-top: 34px;
-            display: grid;
-            grid-template-columns: repeat(3,1fr);
-            gap: 20px;
-        }
-
-        .trend-card {
-            background: white;
-            border: 1px solid #e5edf2;
-            border-radius: 18px;
-            padding: 24px;
-            text-align: left;
-            box-shadow: 0 10px 28px rgba(17,64,94,.06);
-        }
-
-        .trend-card h3 {
-            color: var(--blau-dunkel);
-            margin-top: 0;
-        }
-
-        .trend-card ul {
-            padding-left: 20px;
-            color: #59666f;
-        }
-
-        .trend-card li {
-            margin: 8px 0;
-            line-height: 1.5;
-        }
-
-        .faq-bereich {
-            background: #f7fbfd;
-            border-top: 1px solid #e7f0f5;
-        }
-
-        .faq-shell {
-            max-width: 980px;
-            margin: 38px auto 0;
-            display: grid;
-            gap: 14px;
-        }
-
-        .faq-kategorie {
-            text-align: left;
-            margin: 20px 0 2px;
-            color: var(--blau-dunkel);
-            font-size: 15px;
-            text-transform: uppercase;
-            font-weight: 900;
-            letter-spacing: .8px;
-        }
-
-        details.faq {
-            background: white;
-            border: 1px solid #e2ebf0;
-            border-radius: 16px;
-            overflow: hidden;
-            text-align: left;
-        }
-
-        details.faq summary {
-            list-style: none;
-            cursor: pointer;
-            padding: 22px 62px 22px 22px;
-            position: relative;
-            font-weight: 900;
-            font-size: 17px;
-        }
-
-        details.faq summary::-webkit-details-marker {
-            display: none;
-        }
-
-        details.faq summary::after {
-            content: "+";
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: grid;
-            place-items: center;
-            background: var(--blau-hell);
-            color: var(--blau);
-            font-size: 22px;
-        }
-
-        details.faq[open] summary::after {
-            content: "–";
-        }
-
-        details.faq p {
-            margin: 0;
-            padding: 0 22px 22px;
-            color: #5f6b73;
-            line-height: 1.65;
-        }
-
-        .kontakt-section {
-            max-width: 1180px;
-            margin: 70px auto 0;
-            padding: 0 22px;
-        }
-
-        .kontakt-card {
-            background: linear-gradient(135deg, #f3faff 0%, #ffffff 52%, #f7fbf0 100%);
-            border: 1px solid #dcebf3;
-            border-radius: 26px;
-            padding: 42px;
-            box-shadow: 0 18px 44px rgba(16,54,79,.10);
-        }
-
-        .kontakt-head {
-            max-width: 820px;
-            margin-bottom: 30px;
-        }
-
-        .kontakt-head h2 {
-            margin: 0 0 12px;
-            font-size: clamp(30px,4vw,44px);
-            line-height: 1.08;
-        }
-
-        .kontakt-head p {
-            margin: 0;
-            color: #5f6b73;
-            font-size: 17px;
-            line-height: 1.6;
-        }
-
-        .formular-grid {
-            display: grid;
-            grid-template-columns: repeat(2,1fr);
-            gap: 18px 22px;
-        }
-
-        .formular-feld {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-        }
-
-        .formular-feld.full {
-            grid-column: 1 / -1;
-        }
-
-        .formular-feld label,
-        .datenschutz-zeile {
-            font-weight: 800;
-            font-size: 14px;
-            color: #34434c;
-        }
-
-        .formular-feld input,
-        .formular-feld select,
-        .formular-feld textarea {
-            width: 100%;
-            border: 1px solid #cadbe5;
-            border-radius: 12px;
-            background: #fff;
-            padding: 14px 15px;
-            font: inherit;
-            color: #22272b;
-            outline: none;
-            transition: border-color .2s ease, box-shadow .2s ease;
-        }
-
-        .formular-feld input:focus,
-        .formular-feld select:focus,
-        .formular-feld textarea:focus {
-            border-color: #0b79b7;
-            box-shadow: 0 0 0 4px rgba(11,121,183,.10);
-        }
-
-        .formular-feld textarea {
-            min-height: 140px;
-            resize: vertical;
-        }
-
-        .datenschutz-zeile {
-            margin: 22px 0 18px;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            line-height: 1.45;
-        }
-
-        .datenschutz-zeile input {
-            margin-top: 3px;
-            width: 18px;
-            height: 18px;
-            flex: 0 0 auto;
-        }
-
-        .formular-hinweis {
-            margin: 14px 0 0;
-            color: #68757d;
-            font-size: 12px;
-            line-height: 1.5;
-        }
-
-        .kontakt-actions {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            flex-wrap: wrap;
-        }
-
-        .kontakt-submit {
-            border: 0;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .direkt-kontakt {
-            color: #53636d;
-            font-size: 14px;
-        }
-
-        .hp-field {
-            position: absolute !important;
-            left: -9999px !important;
-            width: 1px !important;
-            height: 1px !important;
-            overflow: hidden !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
-
-        .cta {
-            max-width: 1180px;
-            margin: 70px auto 0;
-            padding: 42px 30px;
-            border-radius: 22px;
-            background: linear-gradient(115deg,var(--blau-dunkel),var(--blau));
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 26px;
-        }
-
-        .cta h2 {
-            margin: 0 0 8px;
-            font-size: 32px;
-        }
-
-        .cta p {
-            margin: 0;
-        }
-
-        footer {
-            margin-top: 50px;
-            padding: 30px 22px 45px;
-            text-align: center;
-            color: #7b8790;
-            font-size: 13px;
-            border-top: 1px solid #edf1f3;
-        }
-
-        @media (max-width: 900px) {
-            .nav-links {
-                display: none;
-            }
-
-            .hero-inner {
-                grid-template-columns: 1fr;
-            }
-
-            .feature-grid,
-            .box-grid,
-            .trend-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .vorteil-leiste {
-                transform: none;
-            }
-        }
-
-        @media (max-width: 620px) {
-            .nav-inner {
-                padding: 0 14px;
-            }
-
-            .brand-text small {
-                display: none;
-            }
-
-            .nav-button {
-                padding: 11px 15px;
-                font-size: 13px;
-            }
-
-            .hero-inner {
-                padding: 38px 16px 80px;
-            }
-
-            .hero h1 {
-                font-size: 44px;
-            }
-
-            .hero p {
-                font-size: 16px;
-            }
-
-            .hero-buttons a {
-                width: 100%;
-            }
-
-            .hero-bild {
-                min-height: 350px;
-            }
-
-            .hero-kreis {
-                width: 300px;
-                height: 300px;
-            }
-
-            .bildkarte img {
-                height: 250px;
-            }
-
-            .preis {
-                width: 125px;
-                height: 125px;
-                left: 0;
-            }
-
-            .preis strong {
-                font-size: 32px;
-            }
-
-            .section {
-                padding: 56px 16px;
-            }
-
-            .feature-grid,
-            .box-grid,
-            .trend-grid,
-            .formular-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .formular-feld.full {
-                grid-column: auto;
-            }
-
-            .kontakt-section {
-                padding: 0 16px;
-            }
-
-            .kontakt-card {
-                padding: 28px 18px;
-            }
-
-            .cta {
-                margin: 40px 16px 0;
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Fotobox mieten Rottweil | Hochzeit, Firmenfeier & Fotobox mit Drucker | Foto Weber</title>
+<meta name="description" content="Fotobox mieten in Rottweil: Selfie-Box, Retrobox und Fotobox-Wohnwagen für Hochzeit, Geburtstag, Firmenfeier und Messe. Mit Drucker, Sofortdruck, KI-/AI-Hintergrund und Greenscreen.">
+
+<meta property="og:title" content="Fotobox mieten in Rottweil | Foto Weber">
+<meta property="og:description" content="Selfie-Box, Retrobox und Fotobox-Wohnwagen für Hochzeit, Geburtstag, Firmenfeier und Messe in Rottweil und Umgebung.">
+<meta property="og:url" content="https://fotobox-regio.de/rottweil/">
+<meta property="og:type" content="website">
+
+<link rel="canonical" href="https://fotobox-regio.de/rottweil/">
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"LocalBusiness",
+  "name":"Foto Weber - Fotobox mieten Rottweil",
+  "telephone":"07474 6248",
+  "priceRange":"ab 299 €",
+  "url":"https://fotobox-regio.de/rottweil/",
+  "areaServed":[
+    "Rottweil",
+    "Göllsdorf",
+    "Feckenhausen",
+    "Neukirch",
+    "Zepfenhan",
+    "Hausen ob Rottweil",
+    "Kreis Rottweil"
+  ],
+  "description":"Fotobox-Verleih für Rottweil mit Selfie-Box, historischer Retrobox und Fotobox-Wohnwagen."
+}
+</script>
+
+<style>
+:root{
+--blau:#0b79b7;
+--blau-dunkel:#075d8e;
+--hellblau:#eaf6fd;
+--orange:#eb4b00;
+--gruen:#77bd00;
+--text:#22272b;
+--grau:#5f6870;
+--linie:#e5edf2;
+}
+
+*{
+box-sizing:border-box
+}
+
+html{
+scroll-behavior:smooth
+}
+
+body{
+margin:0;
+font-family:Arial,Helvetica,sans-serif;
+color:var(--text);
+background:#fff
+}
+
+img{
+display:block;
+max-width:100%
+}
+
+a{
+color:inherit
+}
+
+.topline{
+background:#eef5f8;
+padding:8px 15px;
+text-align:center;
+font-size:12px;
+color:#53636d
+}
+
+.nav{
+position:sticky;
+top:0;
+z-index:20;
+background:#fff;
+border-bottom:1px solid var(--linie)
+}
+
+.nav-inner{
+max-width:1180px;
+margin:auto;
+min-height:80px;
+padding:0 20px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:20px
+}
+
+.brand{
+text-decoration:none;
+display:flex;
+align-items:center;
+gap:12px
+}
+
+.logo{
+width:55px;
+height:46px;
+border-radius:7px;
+background:linear-gradient(145deg,#2878a8,#86c2e8);
+display:grid;
+place-items:center;
+color:#fff;
+font-weight:900;
+font-size:20px
+}
+
+.brand strong{
+display:block;
+color:var(--blau-dunkel);
+font-size:23px
+}
+
+.brand small{
+display:block;
+color:#6b7881;
+margin-top:3px;
+font-weight:700
+}
+
+.links{
+display:flex;
+gap:22px
+}
+
+.links a{
+text-decoration:none;
+font-weight:700;
+font-size:14px
+}
+
+.nav-button,
+.btn{
+display:inline-flex;
+align-items:center;
+justify-content:center;
+min-height:50px;
+padding:0 22px;
+border-radius:999px;
+background:var(--orange);
+color:#fff;
+text-decoration:none;
+font-weight:900;
+border:0;
+cursor:pointer
+}
+
+.hero{
+overflow:hidden
+}
+
+.hero-inner{
+max-width:1180px;
+margin:auto;
+padding:65px 20px 85px;
+display:grid;
+grid-template-columns:1.05fr .95fr;
+gap:40px;
+align-items:center
+}
+
+.kicker{
+display:inline-block;
+background:var(--hellblau);
+color:var(--blau-dunkel);
+padding:9px 15px;
+border-radius:999px;
+font-weight:900;
+font-size:13px;
+margin-bottom:14px
+}
+
+h1{
+margin:0 0 22px;
+font-size:clamp(42px,6vw,72px);
+line-height:.98;
+letter-spacing:-2px
+}
+
+h1 span{
+display:table;
+background:var(--blau);
+color:#fff;
+padding:4px 10px 6px;
+margin:5px 0
+}
+
+h1 em{
+font-style:normal;
+color:#26323a
+}
+
+.hero p{
+font-size:18px;
+line-height:1.55;
+color:#56646c
+}
+
+.hero-actions{
+display:flex;
+gap:12px;
+flex-wrap:wrap;
+margin-top:24px
+}
+
+.btn-secondary{
+background:#fff;
+color:var(--blau-dunkel);
+border:2px solid #d8e8f2
+}
+
+.hero-media{
+position:relative
+}
+
+.hero-media img{
+width:100%;
+height:390px;
+object-fit:cover;
+border-radius:24px;
+border:8px solid #fff;
+box-shadow:0 18px 42px rgba(20,55,80,.14)
+}
+
+.preis{
+position:absolute;
+left:-20px;
+bottom:-20px;
+width:160px;
+height:160px;
+border-radius:50%;
+background:rgba(62,145,197,.96);
+color:#fff;
+text-decoration:none;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+text-align:center;
+border:7px solid rgba(255,255,255,.25);
+box-shadow:0 12px 28px rgba(44,111,156,.25)
+}
+
+.preis strong{
+font-size:41px;
+line-height:1
+}
+
+.preis small{
+font-size:14px
+}
+
+.preis span{
+font-size:11px;
+font-weight:900;
+margin-top:5px
+}
+
+.pills{
+max-width:1200px;
+margin:-15px auto 20px;
+padding:0 20px;
+display:flex;
+justify-content:center;
+gap:10px;
+flex-wrap:wrap
+}
+
+.pill{
+padding:10px 18px;
+border-radius:999px;
+color:#fff;
+font-size:13px;
+font-weight:900
+}
+
+.pill:nth-child(odd){
+background:var(--gruen)
+}
+
+.pill:nth-child(even){
+background:var(--orange)
+}
+
+.section{
+max-width:1180px;
+margin:auto;
+padding:70px 20px
+}
+
+.center{
+text-align:center
+}
+
+.eyebrow{
+color:var(--orange);
+font-size:18px;
+font-weight:900;
+margin-bottom:8px
+}
+
+h2{
+font-size:clamp(30px,4vw,46px);
+line-height:1.08;
+margin:0 0 14px
+}
+
+.lead{
+max-width:820px;
+margin:0 auto;
+color:var(--grau);
+font-size:17px;
+line-height:1.6
+}
+
+.features,
+.cards,
+.trends{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:22px;
+margin-top:38px
+}
+
+.feature,
+.trend{
+border:1px solid var(--linie);
+border-radius:18px;
+padding:22px;
+text-align:left;
+background:#fff
+}
+
+.feature h3,
+.trend h3{
+margin:0 0 8px
+}
+
+.feature p,
+.trend li{
+color:#5e6a72;
+line-height:1.5
+}
+
+.card{
+border:1px solid var(--linie);
+border-radius:20px;
+overflow:hidden;
+background:#fff;
+box-shadow:0 12px 30px rgba(22,61,84,.07)
+}
+
+.card img{
+width:100%;
+height:245px;
+object-fit:cover
+}
+
+.card .body{
+padding:22px;
+text-align:left
+}
+
+.card h3{
+margin:0 0 9px;
+font-size:22px
+}
+
+.card p{
+margin:0;
+color:#5e6a72;
+line-height:1.55
+}
+
+.faq-wrap{
+background:#f7fbfd;
+border-top:1px solid #e7f0f5;
+border-bottom:1px solid #e7f0f5
+}
+
+.faq-list{
+max-width:950px;
+margin:34px auto 0;
+display:grid;
+gap:12px
+}
+
+details{
+background:#fff;
+border:1px solid var(--linie);
+border-radius:14px;
+text-align:left
+}
+
+summary{
+cursor:pointer;
+padding:20px;
+font-weight:900
+}
+
+details p{
+padding:0 20px 20px;
+margin:0;
+color:#5e6a72;
+line-height:1.6
+}
+
+.kontakt{
+max-width:1000px;
+margin:70px auto 0;
+padding:0 20px
+}
+
+.kontakt-card{
+background:linear-gradient(135deg,#f3faff,#fff,#f7fbf0);
+border:1px solid #dcebf3;
+border-radius:24px;
+padding:36px;
+box-shadow:0 16px 38px rgba(20,55,80,.09)
+}
+
+.formgrid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:16px 20px;
+margin-top:28px
+}
+
+.field{
+display:flex;
+flex-direction:column;
+gap:6px
+}
+
+.field.full{
+grid-column:1/-1
+}
+
+label{
+font-weight:800;
+font-size:14px
+}
+
+input,
+select,
+textarea{
+width:100%;
+padding:13px 14px;
+border:1px solid #cadbe5;
+border-radius:11px;
+font:inherit
+}
+
+textarea{
+min-height:130px;
+resize:vertical
+}
+
+.check{
+display:flex;
+gap:9px;
+align-items:flex-start;
+margin:18px 0;
+font-size:14px;
+line-height:1.45
+}
+
+.check input{
+width:18px;
+height:18px
+}
+
+.note{
+font-size:12px;
+color:#6c7880;
+margin-top:12px
+}
+
+footer{
+text-align:center;
+color:#7a8790;
+font-size:13px;
+padding:35px 20px 45px
+}
+
+@media(max-width:850px){
+
+.links{
+display:none
+}
+
+.hero-inner{
+grid-template-columns:1fr
+}
+
+.features,
+.cards,
+.trends{
+grid-template-columns:1fr 1fr
+}
+
+}
+
+@media(max-width:620px){
+
+.brand small{
+display:none
+}
+
+.nav-button{
+padding:0 14px;
+font-size:13px
+}
+
+.hero-inner{
+padding:38px 15px 70px
+}
+
+h1{
+font-size:44px
+}
+
+.hero-media img{
+height:270px
+}
+
+.preis{
+width:125px;
+height:125px;
+left:0
+}
+
+.preis strong{
+font-size:32px
+}
+
+.features,
+.cards,
+.trends,
+.formgrid{
+grid-template-columns:1fr
+}
+
+.field.full{
+grid-column:auto
+}
+
+.kontakt-card{
+padding:26px 17px
+}
+
+}
+</style>
 </head>
 
 <body>
 
-    <div class="topline">
-        <span>Fotoboxen für Hochzeit, Firmenfeier & Event</span>
-        <span>Persönlicher Service aus Haigerloch</span>
-        <span>Mit Drucker, Sofortdruck & digitalen Downloads</span>
-    </div>
-
-    <nav class="nav">
-        <div class="nav-inner">
-
-            <a class="brand" href="https://www.fotoweber.de/selfie-boxen-foto-boxen/">
-                <div class="brand-logo">FW</div>
-                <div class="brand-text">
-                    <strong>FOTO WEBER</strong>
-                    <small>Fotobox-Regio · Rottweil</small>
-                </div>
-            </a>
-
-            <div class="nav-links">
-                <a href="#boxen">Fotoboxen</a>
-                <a href="#vorteile">Vorteile</a>
-                <a href="#faq">FAQ</a>
-                <a href="#kontakt">Kontakt & Anfrage</a>
-            </div>
-
-            <a class="nav-button" href="https://www.fotoweber.de/selfie-boxen-foto-boxen/">
-                Jetzt reservieren
-            </a>
-
-        </div>
-    </nav>
-
-    <section class="hero">
-        <div class="hero-inner">
-
-            <div>
-                <div class="kicker">Fotobox mieten in Rottweil & Region</div>
-
-                <h1>
-                    <span class="blauzeile">Garantierter</span>
-                    <span class="blauzeile">Partyspaß mit</span>
-                    <span class="normal">Foto Weber</span>
-                </h1>
-
-                <p>
-                    Sie suchen nach <strong>„Fotobox mieten Rottweil“</strong>,
-                    einer professionellen <strong>„Fotobox mit Drucker“</strong>
-                    oder einer stylischen <strong>„Photobooth Hochzeit“</strong>?
-                    Bei Foto Weber mieten Sie Selfie-Boxen, die historische
-                    Retrobox (1893) und den Kult-Fotobox-Wohnwagen.
-                </p>
-
-                <div class="hero-buttons">
-                    <a class="btn-primary" href="https://www.fotoweber.de/selfie-boxen-foto-boxen/">
-                        Jetzt Fotobox reservieren
-                    </a>
-
-                    <a class="btn-secondary" href="#faq">
-                        Fragen & Antworten
-                    </a>
-                </div>
-            </div>
-
-            <div class="hero-bild">
-                <div class="hero-kreis"></div>
-
-                <div class="bildkarte">
-                    <img src="data:image/webp;base64,UklGRi5LAABXRUJQVlA4ICJLAADwLgGdASqkATsBPv1kp08rJSMpshkc2WAfiWRtVgCN+3sbnDIeWS95l3Ktr1yEUJS2kI53ITWT/GT4E4A5mDPpXvlpgvud/R7qnfWZjwm+R8vh8H0uf1reD+aDzgfTN/ifUA/p3U7ehB5zXrG/4D/ycHnqH7JtdNfz+C8Feyn/od/P634heMfajAJ7j78/zs/eOg/wo/zH/l9gn+o/7Lw8PUJ+x/+H94fge/bkF6eViKcQ4UxLWKeOUXsR3be/ONdbaWzO2x1NA6WRNhG/i/Z3C/0pBeunJj7i10SsugogklGHBZ9D5YlhNNcwqfUiJOLFzXbIxWiI9WfvorSIMY3Vc/sisBE9aOi9f22HrSm/Zk8eHTU3kLTAs6WNBP3Nvguz10wlp46CB6GGDnXrFXp9kOPRkJPDsU8rnsvF33MZGPiO8H6d3Jhuw5fQ1gNM+p8AoReOFdAWrNHZMV4AgYwK8S+a/TFFI73VTn40jVUSms72DUzRycUv0zzpUKaRLtIzVDrHqOyNnoB70Ne58+wqFFSfHP5dx/zI/o5DCxtOXpWyq1KgP7XHfjjlJ000TCzsYqdOF8xly2XlEwSIz7Qovi+s8wKcdnApuiV0TIuIAO8GZ8Esn5Z8Dib83M4RkZmEtkG1WJyscFZuJdJTrSPIrDIwMgkl0acrFJo/tDJpNYsQD+8W0+iuk0torPJw+EA4ethqOdldP5eHugL4U0qGVcK8KIioOeH4WbWCYWEA/qG8lyMVejTx8fsYIgaJbLYXIaqb1vLwfxFiWxwvkydlV+2Br9MGd87Zq/07LFjKuCX1nVyj1Vf0UZkRYrQDduafLdglespXhe1POIjgP79ReYTUtnIeVwkSVbn5DcWF+iN7f4a+WK42JDPwFexjJYZPbNnaP7rP/js04JDvlhTvBEneFGORTpgJOjFuNIorYiC2vCVYrwpCiw/fyyi/AGfPYa2VSutR6f0tzBmRxGyDadi3HpkA3yjCmYgu2M/xWILyFXrgJ2cU5pKwPzVBg8NBZC4OFHjuqFPOnZ4JMQnZrT2QbZ+aSQ2MrlvJERiHlrJ58kEUn5alvNsW6LE/ECcXOOfiBheTVB8fWcvqMPkDUgppp4ipeZcf5r4kGgKYhpvjwXb4ACtj0FsBkn0kXsc4qtf1SCe8t98oRoUiFnKO1pwo22EUYrps5peUtsX8MbB4WQkvcDWizJ5+PJauhS6XtAifCl/+CcACA4TRP8g9ywqp1m3ZkqCiAyx69ZXe9g3o/n0+x+SlP1leyyl5nrG1kt801EC/BUbdthI53iXmG02QXEWptTPLMrwVr51hQbXQU7aKXxwkvaOFyFYrho8HcDcL7ZK4OmI4v4sX8rOWLPiV+p/c8OJFs16aNyeb1zGmxEF5o+9yDmwzd2Mx5DmaM8U4RxFpFX22A04t7ixqEpk0c3pswoQUGmiP1mhz/YUPlMPMcX6T9uE7HWYaBTip9vv9XYRnute/D0plP4vMaGQ5g4giJLIEheQkp4MEY8+sFuj8z4l69YC7LLYPHLBzRuEf61uPN0snzYYoIqANHpZBjbuclFQH5a0ypC+t7WYAbwTwVcKWqxXZeO25i9wvDnDWGG2Z6tyT43MiLoIX+k3HrMrS2hxvwzviScB36NQtjHBr9ODz+jZ+a0BN38JXx3fXZfHJkW+Z3+64ILpIG29X/oL33R6r8gCGowyZuBxEDiEvZk8uFEugbNaUtrhnf/ZAWd7Y8aNQVJLtxiwiI0oDPzAQv4ArvZGjlh3zNAMFtzMtdYcEePSEqp07SUu1/qtl8M7f4u8f7cg4lM7lSpZ+QiGItDIgi1NQNbBD+zVUA1X8PhSv87NzBFTJzibV5UFmNHmW8WwsaqAiTU2afNJZHbEnU4CIcPQRNl1aM0a04i51xzjngDldmM2EpKNTHDBiddhU0UWTLiAGoKQw5zkz1rXjrbFL2fsXwv7sMcZUxOCj1caxwx0twd0z8Som4pYQyPol+xpSBiQc7/J3Io30ZpAT8E33Y1epGUYqFMaStDoF1T+BU1T5lY37NKJwmGZ3pa4lRKNXN6iti8I8VZBTsP1K5hElm64R7ywx9Q/N7VxK8bayjdv2WuDFBnOQwdfwPhNQzsvfNmDc/YTFEuTgonjqCgZf5C7zm2vo4SJkbmp5fKCTyZB16SVPIqqZuymV1wcHCuxfeNVaIw3avNcsHk9ylLFRHbZEIP+hDnfh3dq1qV1gGBzdLBECwGx2zGCbLAvaUd8U8IyAoSDIGsJhZgiAYjrB/KU5ttkGMe9MuDExoLnYyc9gL03I1XHbyHljtGujzS1LlhRKIPbEYAMoB+WX3hhFde7Imi4rdAxvb5TU8Ab3/dRIqCwBrLjgJtIGcEXXmjp0bOVXhHc6h4Y5mrxxUjAzC/OHG9kLTkmOyi8M6vqr4tOWKbOSP+wlvxdraC1+QE4K4+0+v8mrKWDAdVcwKRkwaBZl7P1fbKU04PohUGMEdHQ78TikoiaCIvfYxarE9wX3wcz93ORdgCA0l5fQoZZVaTHQwOQp8jveTtzvDP8pJUtVxygQAZM98Rx/yRhnRSYHHovLiN/vnHPzePkml9iTYlmTH9c1kItQtKv4tdB1g/T8uM0AfUykUxgfGCmz+SUyZWsm4fUgmPNxhcgBJYHp3j8O3RNoSsH+8u+hK5/TH6nzq5QoaLmpwv4/qAL9JA80ut9r2QLOCeo0PBTPiMHyJQBOMY/E1ikVyVpczNdEXUOj43YWTNVrnaIbKjhUyyChsvSHJHuSCFAPJ1GtONX8RU5hM+zbeUX9fFVg0hu4DZoExJ/cv3GxmJekz0vOaRycjS2IRrj4wvk6DsRn/Y4E0WErAAd8ZUmoXJMTEmIB2izjz9V5IpJ74KzuaZo3rgU+dLnlIDIk14JebKsOAsOoa2BgmUrJAmzcz8QtW7ZC0IuZfIaBKb+0vUVSUlFr1bfcYqP29Jw8e8QXjO/sDCamMoIqglmKbCKFjyNwgir6a4S3hG4nbiOTw9e+AYbzGNMi7cTfGZgU9GcfnrBp0THHFVLCOhb4J2j/GoEyS8E4BsozkyDpdMCdsasYtbrJfeV454CxL39qnsQoM77cwP9YVc/7MIq+A1edJwhkqxLkvvcZISaxTUNclul6VHWnxGjDK2uv5CQ1JA0SnC4emR/VjmqMRpoE9Gr/vyPkCHkYSF9qOy6Nz/tzEuvLjLD/tn4uL4z8dzKuEE0nhcBayWARhOpaouMAAAD97wNudj7uBzoyhBQ3P/S62w7iZap1oO4d+hPjHJQZ2Le+iS9iWz2JnkBTBpZzJ3bvDxOwvff6dgHOw1g/vZ4LsOvhIWc0XcYx9acdXljOoTG1SqJjTKsr2HEStXcc6yvBKDGfuZnYi4h8wXUztvfdVDgPXQajXFX6HQeqkLTMz+x23ELYsI24dWRKnZIODRw9vMCAYN2SgLZjrzwEnsd8bm2azDL9FA64qPrtcfhgn50fAyQHQnBvoN/xiBbbQSZ59WQd70oRZ18O3cvO9UzJ2sNV0rcSsPL37FeM31x8Shl6rNPYutkj9ypbu+uOb0z0hL6uMndxwBLVYm1qfhfGyhE4EjVnYNwrmdxjVKa71X8XlFjDkKEhKJeHoAWyOe2o9a36rBCeEPAc/RZyfcym8XcfcVac0ir87gIHE3JZAfCInaT0LdVtzKjN+cLAVt0TacY/q5XpcoAf0v75O+I6qWNXMHNPjjC3yqrLOQgzi0l/MEUcjbRFuEQZkR6PgmLSYBRnER7RPDceHyyHjvLtoauud7uBLpPwl2u/3JAapErFigrN+rD5LFP53dWIVItqQEIjaWkwmuEAFL38lnb2k+XRqvjJ9zStjWaSrz4J/jXPnLsQ5OpYb1mNV+7ixBbk5SP84nieGeSrn4ajcCtwiiYUW/nkfHwvJb5hzNipSbMw/x5x9I4klYMD+TypD52ct/ZczHvgdor8pqk943ZwRs0TCKZNo6nMeYXM9gJHsEMCUNJ+L8kZCcp8+pi3DF8/FO8q1AuVxgUWWwLQwMmzaCJwcUuhSEZi/0Dj4Tk8mA0S6/ZSZCOooOduiEPPNFS+Mw1aYWKRAMdi+TW1ptTBdHk/YpwVua2vCLaeQn5OSlEouIxYzwvwYlKJ+MIk9/AB25alWo06eaip1clunxqLeCJShCjbZR8Ad2ZUOta/jcDCZUXmWrB+SKcKtsJXwHfRaxTYzdI+kqHhlyf43jpVAbw2OFbsgzXawn2VYeqAdUIrvNg3kD/mR4rJVNn55nT/O7Hg81FCi6t3FtU9i9hnTNJjNUEAnSx91HTsU1i/ZSJKbh0NfemrY2JmAh3XKHu7JmhEaIlPZdNxyS/cIZbUUZM63cllz+ue+6M7ARXY5u0rbaSlsy2i+2qgo+bckbHKA0zIxLKy/0zOcApykm99CtnEvKCl5pZmrgiM2nDWUbHm60/5/cLvEd9PMpMvHZIJorf3Y5gXDy//iOGvQP3ZHxizd/c9bnPUuH/R5snq+3eDR6Z2fDwfnkhljXpX5aco9mbfAfc7uaPjtV8nbBTNvxJvhjgs+YcrwBOSuh+C68W36xTDRjdRYf1gcKskQn6xnjjH6qxfBau5oDojSsmya46uohLWdP6h/nJqfZTOvYd+TkEAKnwYbZwT7QyqRwW4gc2iFVJFthJY9pjRgwtUv+4Qq84e4ZvVwhkTrcGNWPGBnpToi7CaWfL8jFijMOpZKmkcL4jYvVRgM3mt/l8owGMxC2OH44Dvx6iK5eZ6aMJV5JriWu2Hv+8UMsuZfgWnDrI0/Xdzn2Y2iGzBSYyymffeZq70Q1iGxlncfzQDjVQWwB5ZmQy06eaGzPR8zthSbqmcYSeQVjQMPokA9I0SYxi+i3KZ9kx2LvoeHbTljmaegoK3n/fRqoCAklRsnrbsbsge11bylFNvdGvA91OUCtDKA1CEsyAmBu6dcCCIH6oWdNygY7+6TrjQ44RwLq215FLPlZ0AGloxItqUJaBzKt6cCMqFICoKrbPlNdp5mHEYguPSf5HZ4+Pv682gleU+N6eGgJKagf7cxXuQj/YVyWAk16Do3rEbd3v693YvFTjgoIQzpCrT75MreXNEL0iiEIlvqhN4gS6JcPBVayxANfNgwJOHdXaWR6p3BJ48IUXUW5pSle+LE/7/imWYrtC9fl06R2WPIOX8S2hu6+nbi0C+s3sqf6Q1iuYM1hhFzkaCCxlVEVdaqD3kdIDvbbu6yOtqnDzkdsgwdEfMwUUZykJLssQCwmZcVqJbs3Wolb0PYdchzxkG2rI9N5cImuT3PhTU+YgZzCHKid068xg3b4iN/OF/OS0Cul1ZcxVNlH/WtdMM8NQGUlEuwiN8Fg61KVPjX/jZthOm23MOctLNVOJYfnZB1BxLrJIvibp0DTRafAMvMA+IXSEcKHrVfDVMiI5tY8zFLsES0O7Lz83/rsD3Ar8zwPhmwk/9gCFsCe0df1TERdCjdhqgmLnL4OCi3NTPD8D90QHwXPq+WyKGfqWnji0PrzsLFfXQXlb3GZ5HBk2UQiqPgdMNUm6DpvtVvgK04XyJKGYojtOsXeM4eb8bxUr07qaO0y7KjHU0pllFIpECOF36wi9kdhU0L3t6MP9doeiJk0T0/EOi4oLe56Oi0Z6NITG02kNWyQ35TadHWOW7XGXqnwsUm20S0kRXT07PxXbjo6W8IT6VdE5oE/k2MTFNzUGYymLsdE2cPEkZ6QMI9ixg1ins2Nkc4uDHDztwt1AzyWATEgteAm86Z5SQ9geIEjj6ISnx0sbUMcvYFPft8p/hjTwqbayJxvtVp/J5UPsPG83CZWYu+xzbYBx9cV8LZMF5fl7mAGt2Pk9vosFYXQTXDFiNaWcomRuUBYMK/5OpB0zyH0WE9Tbw19wByOjM+G3bRGSRLJSsctQ1qvFooWAAyvjVFxQzpxm2ZD2dHG1noUHD5idYuXvFbb0TlbuhRHESUN4yA/BeIggpDRBUvowms7UynskLfvvoaP6fS5mMjnNJmAv17i5VVOM5iC4UosFliiQlhWudh8mV0gVD6Lu0ZAC/h8CwapdHWXT8iDAQCL+JPlp3/3axyufoj+dXHd+65BG1SHjcSNaEqMY95RP+Lfql/YMvwWRgzK+Xzh7utkpkjJajHgRoSVdUi/qJTkhSqx74jNLIKQtMBzf2hUhzEeD4hFDTDZX/Wptyvg6wBpxGc5ogUpaM2dBW9D2wnpklNUcdBe9Gcc7T5R2hjbI7qnT7AQ6+bXl/kmSu6EWSsRZotxG1Z2hz5+91XwWjz7BviM0+nC6vRb5p25+Ty2hZ7yttvFFBvrZzYv6sQiRliKBWRMSEVW8xAyswrnIz/LSoNx6iUtTMskhvXIXnyu5FIFf7JAV/jL6KuW29cQHhODF0uxwfioOmIl2CWd5kNNFu1MN4LLknz5nz1ZeGD1z6VlTqzRxhuZlT/qHyddD6dOkcnj/C35jsma+pJJU5jNpWirHmKxKg6znwpZVL1F7SFyZlSntQg8noArh894Utuw5WS1CkdN8Gj3kcmfAk9CwQ/P2E68oGrq2BZuMUuyxLwj8BxWrsoqCkRGfqx676Uu/f5+Zz4+ctife3vmG5DJRmB8nsK24ln3Qu85S/mstHU6XTzjO7aAyddHitzlJAbXQjCLSz139FWG14nc/fBh4JlxAqe2Mi9W9jDjgX06wi9G8R8lSbXYNgU/VOpDDmtQ6gwACPSSEzc3vYSX8cpZtiCyItgtQ94RGKvsFdW3AAs6bjG3e9Bz/Cb6Wl8VT/e7uxz2W2E7RE8MBCbfgCbazHIe5wc4ce7/H+gkuhWxhLbRGHbzkBBZiUPOLzEPzTOIHCS7EHu6+dLY/zq9QADSoJjH9stOOCT36OOjjWfRxSLQEQaX7rMrrFJd0eMe/1m9l55MZugyKHpF3unLuheKOvilLIuhp6vEJyaT7LsmJg861k7lttME4IHstgYuC0AArJEBPp7/2QiK6jw081bjJ9Rfc8mRN+SMOzUMuTEQkRnoxwL/cdFdpWwFn2sbdglSA0VtQJrh34NVNsQ56qEk8zDL/susbPpaqBCKkxJ2Ld9ycS+0zsiYiBbn3wMVL8MnWmAJEfz5OP4Zae4/ryTin3QgVCCej4ZWwMLogQ0ZgFKvP45Pt2mj/JlGW9bcKyuHmnOk51LqESJbH55jipZPv6XF0aZX/3FSqFHGV7qDJrSLRJwYa/9at1v7QagvQ/vuBFScAzkfw9PNH3Jdf8MQnG9nhx8sLIRZ2rWQvtbcD2YYpun8qYcCMDgrEAxKXw5aPPAvMeOhEPFbUYhQHWITTHILvuqsPgTTAo7K8PFOSvIpgS6kbEZo6q27mOLFXhHiqHF74WG/2dKwskGYA6ghy9obYdn9rXNgpKxzPpqXbMS9COclaGBDzJ2wUDawNDwaoRU1eRyseiDFN/rq0LCUXPh/o0e7byAMeTKoV6oVaDwwMFpcTdXnHK8tFr5bkJOdd37h2Z9py/c8aFh9HFTq5Iest0FlbcNscJ61bA7gquTtJxqEPa1hE2pZE+sG5WjbtiPfKOgGYT11zofhhsxKQOcRraNty82YyMyMxn+d0xjgpF4Ae/QOBYMEqEBAyxxduOfbmUYATUMGyErw1OdWgD+I+ZryYOFjgyJxGQab9GewNpwRyzpXu7x83/wv4I0ChCim1PGw+/lGoMbGImz9HNPxGjIHB9b6r9kUSd3nQqJV70H6Nxqf62nws4ryvnUUdPYV0Ag9JPWwNCSPA/cJqSRE4t3dWS4Lc19afkGYU5m0vvRdUCPZBrJf7Ikynhn7s1yWm4OMuJYOZYG8vUMYfZ0bEBweqtrICT0B4RVqtkqxUcU/qhJmjarWszgQxeCGJeMXj9iOTSxnkz5osqc0q/FlsJEJ921AmZokWYlzRq4xMVsXgmzxkACPkEtbrnboCUkbkAwowtrZQPhOMy8ut9oc2/tMWSQ65tmQkV6ESU2Nw0t/Uu2Ji5cHGtZ83gLwLss/J4Pa1UE7N45nsUtYUwwBBEgHWGdaiZ2LmZDZmDnye0WtES7TXGNVgaFKPKqQA6JsB4tU5iR2Lbjh3WRLBEHy2wRMJGjL+5J2utDTDj2uW9zC2O67MaeK9B4u+HekrEQGP3wWRt42HX6uCowv8jTyD5XrFf2xtdv/zKtb4/TGwXmquFlmQ2fJiMqgKva3leCUQCEEB+onYn43OUp1C3P0A338084cPWChTqkWj8o40jH/zYsc/57bXwA97zH+TA8EgIrOddC8O3N7zq+329/GwdyE4kWhU0W6Pg92ai8YYl163RcGk+Ucs6ewhL5RR/2CgZKlw0dq2dVq9zR0WAJPJh0X8t3QGTr80dSsM1KRkmOZLuOL6o62lACl6qeRWBpMmWLnAO2sKqTLvFBeoUBpJXPQ/GqeomfL4uMeKFRLWTfcrFW4ZmfkaeOAuTRDWfyKKS2mup2wS3rlpk+ig3C5pFFjAndbJYnMPikR/LWLt+QIH2RkI1a6HE6zg3tunrKPXad3vkrwYpmMTP5ivFbrMBkJryM/8scdONKRMH/xspZLhWZv9agwez3Zb4pe8oNnZASH++K7EKmLZpZr+/HEO21gOzO8mXqadzEExIgvw5qaa7hWTca1qdWhLb+KLmuK0LDMGT4Z+LzzF0C1wT7AzOKh8mafKPzL1kcBw5pVvT5DdzvofnGnBhBwOblm08h/6z0BhxwpTaBsbIzfeYzDSWJ2M5Jos1JwtdGiZcqz3a9Zp4av258zqNL4JRQpjNxC7enxSbFDkP5zZ8VPGX3IqBwFZh+7IPmC7UPOFyMPNbJpKDu2Ob/XD54n3/8Ix2emhPyxQkZOXnDw0dN/u+VCLJf6874ulsF3Wvb8xxhwltkYtzZ7g6KJA6BFG7/qeUJWeCgAr9V/aixIIYJ/uASBD7Bt8y2dEBtGfJ3CY4HXDtDqZAkoubZNH60upCDjom9MwqBMSs0RkCT+9O9GBsvk91WuFexOHYz/66YxLiY05P1JptvhU4NucrX/Z20RSZ50XrDs9p7ypka91aonIUxfpb14jZI2Bh/B41wssuUdDugacfNIwBUbxLTjp724ucZtUsQNB8YAVVNauwb9prWjJHlM5Ipzj5+2dJvPCMFUrNl8Qzg34vyHVTkgYz8W+yFg315QucPgYmUhl26PNtbkJAekyX7/0u7e1mzMIqbOTP2aLIU9lljpYiGDE8BeUrpEcQl609YtuRDGejyAqzLT5oZjr+IvJ2wgT3l6BpQjjti6lTY5rRp+3Ryh7+bntuoA4a3iEzsebcmnXyFAmVz8MfTNzHQQp/R6dpzEi8jfahY/nAIKZtaTUfuilW7wFef41c1iSnTiHE2GB6dHKzXitDQ3oDTb83Bu/chimsBW8/rqITsHuOQCBRL5eZPrjR7aWnozoRZi5AIFTe2cFd4ZY7t0hYVktprcRtxyflkzRNwqP4ksHwRSHk/LSdSfCfuniDUcV06Tsuxxtt7seun6kpBaRyaeIWzMlTxHeb4zC+5u9wLznjXmKc9NVmjD1IDJwyoVpvqiCfwU/t8sNoqKqoeQnzYmxMF0gpQsCrkQABlh38YuXJ0SjTBm9Ne3c+pRdZt5FuZP7j/BlKqSPMmQ8Cl7jb85VNGwbJfszU1sNnj7mItx0VRpHxIcS16ZavRIfcbhAkIyRaWKZzFF8RC9bPL6FcLVoL4ckpxpxvE1fQqT6qxJK3yuCbmVzOqKVHQbcVPF+Uiu5Za+BODOCpt+ijfugOFjO420tcPq+Jl2Jc12jAsz9XVXuhfrOYn8zPuW4FcKxGzL1VPATht5TSj2r78mMBL9ybjfE3HaGpSUm3fbfZql3fnbHDkSGSIP6sWd7lxa+pcMfOqdNy2GvzEkkCNxJVYPZWKy6VfFjPJtSJG3yBz4nxpHMqu8XQTpL7T0hr4NnEg+zMY8MKx67wZbnRdu0UTLMoP321je8Jf5e6HhdpBqU5miMjVU2J5ZoP9IxWHCH98iGP2fPkCOTdAyNPAI6ltXpQjAc3UfKJ6mXDIXbPKZ+inI9rZ3lp0PEmMFlQVZqf7vCgWtAgT2Qv3FKockkpG194wyqqnK6g23oB/cRVw5potie53XDYJZRNbfXwgvzKOKexOCDOpsyDKrvH7cIvtX52zDXZ3KDqpRwV3bt/rcX+GpT9NaQiqVKiZbxO7wCCUuIn/Nj8SzWMMi3ChyQB42wNbTXNdTs3M3rOginX9z00V0CN+0KBtVJGU9atJwmgbHU9xRbiSLEVdfHebaMKV1FhNtdprsz7NHhwC+af1bxg3BqxPD7hsdkzWso6rFWHn2Sb49TuEKGkjv2zz4AdwMqzcEzNXtH5ps/6exdkxkaSEe5qo8m03svLcMRg6AbSPFfDsJDh01w5Ox5j+8Nr5t4VFOHBu8yc2fzxOQopqxJvjH1OTAv1AfAchobX4s3AsQGeGNAJxo5oWwzRbUJeeLxsAe2eku34FrTtXZAztn9LNbEFbXoi4NPiPyNiZKnQISYY3orQ6Ey5glLAXJUaJMwijE3s7PRk57TSsE7a/W+qF1gzQHrswpoRZc16voVampLVVj2V5/3Wte6i/JEriIU0v8RBxqwffv4LHx/gGsZiHWA5kfS1zTEXv19BZ4STYs+3CTeKxQRVt4OFD6rxNJcx17Qmouilbu5DpjfYXe9ismYBjzFbWHHmXwMMlTUhcsxTTguf86BYKTwipJTYddWMRK5zfDw4IIreIs4GnPVUlpt+m32bBqtXU5M3AlbsxIaQQYa2sbv2S/A9iXEmbYL6ZJmQubMUuQPIljWy+bmTp+bRamMWdmWR3HN+8xfdpiTEnXlqX5NoQtO1BUSz7w98bcXyKD511LkKzU08HBvf3DS42tyrwZZHyeBOI6etSwDnYHEvHAEkd/fJ/oqXNPpliQP9PGfOULA59DqbCMxAVwjL5L9AASwtEPWuUrv4h84ZJVzF4duaTfHpG2mTICVBIhSnWjXWypnwAT6Z2HMixJfePFoOAsUMFA1GZU0OmhTYapNGoiO09vf1PL4TT8Kt6BZXBShlubbPFGYwu+fvrFFV/rmPOioIQwlIeB0nmjnXABUylY8uL6nGmwv8DRPFXlfX887Mqkf5Bf/Ow5R3bcU2WCazi9TTQDzQIF/eyKBeh05stpIqJSYaJsjI9YIS2HPCINiHJAzQlv7yhELU/hRldFeIAxRW4C0jvrCGhL2N2l9GbKTihUOsKFoi3FYwmb99Bd5E4TcrYhGZHDo58RIMYq3Cd4wHjZAnWc3kW5pNx9QJ8O5sf7KFtgp7Opdn4Ecz7LXCUrwPPisAfW0JoByw+X1qv0f4g2W7SiumhT4NtHnrZ7arSZ7WcBxbgqO8A4YXfy6CZ2bdG0jPC9kD7tuTzairnODz/O/iOjWGwLv8gXLPW4Txd3/O9SM5F2T5gFXg19J1x2hc3vvsfGDo4oabWC6Woa2thapgt1MJNyecGoX89rAFlgz1kHya5KbAFvUtD5ICkhoaMHbstjcfwXbmpFpMK0OWsk+wipnAipmul9ZRHMnAvDzV/pBielnYw/HwOineswOl44SDMzNysZKbopErDIj1G7niL9M+bP9bQ4ImYJWXu0x4FuuLI8Pa1yIF+tqnztovo0b4z5eCzMSRH4BHe6M0ms2C7rG6uslaYsn74InBzrkA0J9N5/WNBrnPnqIYlFMNLIcoklUpF8soYa2mYe/78aTd561rWA2qGsFAlssbhgjQflCL/27wLIUt5RHgsBG1k3MH/DSrf3FYniZ6EJozDE0UE5Uxwiih8fOnpj74eA6/78F2niYApgSqxs3QC4Ybl2Mk2u2yuS1ebhD4qA6YdfP38ZHO9yNe7Po3O7TziqzIDy1I2tq/6xGmlURaerQ8RoOFZS9EZD9oW7RSSBIaS4mFpkrnOPIYZ3ByGLdr1tvizzrcHDDkvMXfUAZ1ySvNM1i9Zdpf20QH07qngY7fkgCMw22S3RucicVf5gV/WpBFBCs+c0E05EP0NeCC4z5sNypdXNxE+tL+XRHcqaJdSO8CVMJwyXmWTLkNfDAKA0y0+8tBjmm5w5/R7QTMqDJgbTOt2ZGMwEDPI9TpzwdsLZAJm5A6AWTQjasLXM+q9cmu5QMoOdgm7QsfagW6qLH81qxOox0ynfTFyp2//rkL+1ABl6XH42cu5Tx1lCM+nVVmJWROr724NaJhNdXubHqWQww6G10xWmKSuSakjZcrzoZPAQxgSh5qpUcj5EgioeR6BAcpnnP/ybcjtbdm5HGFb90OyjDYx9ivPtnTwlw3/57hrnJeRSfRU+P1YMZ0lamA5Rf35ku/9PGsw8zUUhYCJ38LifKmDz0yIkD5CfTsBpt0MaoiiTvxaUZA90Ye0NeNI1NVRKrzuGGIgXfEaOB4XBx91e/sAdQtVKegfOHGOL4W20D2cF+Vo7qUiHk942ss4Zt8oBUqL5AjCH8NMDrfUfKFRNIMHjUSm9TDA3XSUPe7+BolXjmTeowzWgJZhP2UnF+ucM6r3B1DOXoZvllTHnldEUVclxYi9ecS0cMG/YznwXaBUkg10f96yFtPGH7RPFgMgvJaoMTp9JQJ6n9F3GAPGEEEYEKFiItZwRY06HBHUph6DUnCy3aiVxwuJ/7hzaiAKs4WDxTyJq1ujUCebgsWcZ3TcxQ9FyAcU+u8MZ1hh4FSi4Aowma6rvlKNDLqPSey6d956fz/+wDy26Rw8+OXioQbpzVPBX1fLPeL9G9zxGJHHLEPsizmsispq89mMOlMujjf85TwJeXh/w7ZPUq2wEXsmgv+No6Uulfvg/3roa0t1su0L8y6mucLSwG3kqYRhJp6tWIb/i/5APSlDgC28qgnLmbGsAcK9LXS6Epq6LcIfABcB6YduotqBZ7DDeddsWsGr8mGuYZh/Q1NPgV3U0AxlVqF/B4/bpCYXEIRybre9apgXbxehC4QiXHHMGjDoPtYHLoXNgU43usDi/PjgUnqOr55DWJMR5/HiAVlQvVbCly1cIqLbZwmfukPbPJ+a4HlY+0BkKUheWCfOmZidu2+sur5NrF3TkReC4R7k7tkls9yACKg/kAWzgKe58UZ72p70QcnqlSsdLzidBFkdNLJJqHRQllDtl5Zzib0SYSpRJHkUemAlIWYnD0ZiYP1j62xnsU9h93QLkcwvGcKLpRZccdWRbc4V6/KZ0KnP/dEZl0nxagOBs70Kt4+K0ckvgG2VT9Nb9/Hg2ybthstunrCrYPhTTx8WTZL3xR4vIMF787oho3HRah6S8674PYS7IMI6bjnf2d/nGcPRnGLyDco8dEtJnlg4IDB4qP3g4plvhaQJr3MbZDtgMQ2azh4SV2n16F8Zwne1AoNcz7J8v13NuMMN4CyBHkz7aCRK0DpvA4blNnkFRW9x3kUBI5/aZjU3QksOQm5O/5w8LQa+bWP5E4ndajRwiWBIlxjABtpK5ug3lkSkzff5skzKom6yhPAyBq+w8XqiLim5GWs8oa8jFmUvBy601fl6xIU5GyhLc1cGmYRZp7iRNpcVnhmXMPXCYrc6FaA2bsdz6+IdqM4ihoKWikKuUCRTE9PWteOU/lhfqapjbhZAYVdYnEYNwrUsahUvXl5equxs8o1NlqgQWrktGUdFnP5cdgtBYYBaYG+BcL/JTKuAVpqHfJkNHjxqcvkPtIy+BbRRrIq+U7wrkDnOgDVjxmjoNqY6BQv6hUcYXm3rf7TOgkh6qVzhBSbKnTRAlRBmwiXz+B5AdDXDpqkB+dt3yUiKREhx1bkDKtpUY+Xx53+kcb6JGYi7W7F80jGvgaofpseUDO9GSKnGrZGYqgxdTODRrAd8lEgbothPrIxedLNN8NEJTBgrDKvGWfAs/ChkL+RfZJC9mACizLIlyMs7wfea7JwGYPbIkW98JA+j4mMYcz3QSrpxxCCEeqfeovTlSRa0DrA6BErDMdop93Y195LZgvEVkVjzXa5nwlrFOHn4rGQzYcfvUyUfgcTYPXm7aQZ5dyZnoc9qePRe+4YGfIwuPRr3m02z4GT7rQRibs0aChSLic3cqDctboGaVs5jBGiBjFhLMPyjz9Io1c8A3tvogCpqn2LBdS/q91Xvv/9iNhb8pk124uB50GbviK4i/pB3wP3fMmbk37lgAVZUjRYjs/gsZdBjPkb0P/CmibYnUdP8epB+4qcM20PbmPAddiv+pe3RiXsZGXxQFjdFemSpYt4KplEU99HgSlAPQzBbYwOmwMGOpx8M9UhyWW+CqI7g+rKtgi0IFVFxhwgUNVlFH3zFGURJuXFFv1iZ0guh/8hCqfO0DLc3nSsOUi93ohcH3XDIqVKxkMA8ir9WpTcvRCvjg4qmOy0/cd2yGfYrkLFeYsV3XowiookqL7GypXQrDoZjvdV3jgYxIEBcI+aYSq/CINADwhNe6E6NKmPPdZSeL5Y6F33+zAUhkhZIXYHeNSRr2HtxO/zLeEQXGz2fazP3jkuZ7ujbR9zcmfd3fkx7Rncd9kSmyRlLieTGlkzRM+AY4Bv0pWG+j+F1g1JHLiJklsG7UvmF0ZFWyaF5wdvmwoUBNekDWVZCLubjmBvFlq6LGzPPHijWZOAtRZmqaNLYWQVQNx8Soze0gfe/FUGkdrFvx5hPm0QReEBErrD7hHnxPFs4ydCbREVVNLLq1sr+7/cF3HXE7CDCgGELIRBW27XKYdac3S/DmWp030xtpRZ2bR41X8Pw0+c5P+3pOVWKT4PzB0xyrPDcTjGmv6jR4BW/10yMsv5CfFf7wpWdPRBm23Xo6g3hzJUhEQySadYRXjVSUn1sAMeZYkR0dmuDo69803oCFiparztXxMbT9Fo+mNN9EAt0phDa/yb5pglhGnIs/TQjOhVEVgKFZ5epl46oF/e2fD3x0VNv+tEbI83V5jlg7fmpJURnGTWnOv1ftoy3xDeFqoMnABVW6pgkwNmz5EEscftkVYlSAJtg5uTQB2cl6LBS9n8/FMKcZJeYOISP7d6vGTgzK+jwp/1aPXko737LlFjNRaSMSDImoVE7EMb9aWohu/r16BKqtJtPryJ+Dpkc1CUFV/MRixgPjjleqvMcvEAn4Kccyc1/03mQIxMmBbweAXkEP39njNWgCkh4SSfRS2w5B2eRWARvM8wj2hQ/Dt7zrpihMX8Nwnh3rDJtka5RVDasCsfqryGSwdWCoyytpmOhmCPYjdC6x0iMQ1k3w5HN8pFyGKBzZNGZK6KvNxECjswaQHWcXgRin7SFR9lSVyEMpdZBA/BLNZNfc3Vjb83G83PwrNq+dzUwedmu2h9Ao4Z/eRT0gWLgrWnCwB0IpJONUXLF+3HGxOjAwxoVQy7rk4xec9gNLwYbI7ThUl00JzOKkZc9/tw/PEczuyvW8XLQwxmrBISx7XKY0dB/RjPEMP8ZrbxZ43lil6WxGkf++e3/qKXaaCRf6vG5XjEuMH3OVlbeHojtLSbvT5ktjRy+f9DH3NAfNoZmpltAZ8p5gCFyNVcKJQT2Aq4yqrS3N2zLZ8/25uYtKu9CaZmy+Lk5CBfHMRDkuwP/Au3xX5dpPM+0v3vI4Z/ulK+gu3PTSDcETDlh1u4uWNV6JmBhDAlD5Jtz/rCDqyJHQOlJ8E1faaYJAEUVU28YkJH9pVEUKsxPWr0VMyzVcj6an3p1v0FhyicgjRgKkHBHOxc2PE1L2BZmFxFDL4LxcfAeHEtnXPkf/Ss72IsRCGqb+8hXFiEBKN0WVDhGfnh6hfQc9s/4kUkvq255gxA9s60JF+Mxs7s2Wn9NtVylR1BqJ6IzoWNx/HiX5zUsO1mztHO2RimelwW+NFayKlsTTvyakIMLnK7Dzp+7kYtcWIf0KnzIROESPoub+XN//Bo4swdGPHjHhyGdmYlOuEVzCloCApjLKa/ZwK50AXwI479FTPIbBmJr8Y0JVsBKHbtzIOxVmYXEQDzmfBVnMjfNM7xVaESMM32yiV4FaB70M5nBx5XnS8Y9manbRhTwTKPlSe5k5DzXkGqclRQsw1Ec+g7nEvGFLCpc5ZsoKpTbCEILqgM4YovqVdaf5+eUgSou0xxsJnD9vjHQoG8KHlZjA1cSPNFFG0vCwV3SZd51+VfXI+MLZYmmpd/54uPZpgH6J8lqUtWtCnNtI2O9ZS0MXqUujqCdL+00ue5ntRV1qbzyuNZ0Xv3WUo/143t+84l8sRqfYkGM3EuWd8mv7QWwA82rzJJDelta7TK7xXTJB9b7SHik9dTAz43fv4fnrhDN+NHrejkuRpydMvhsJi0hikNwy3RptkUdwlF1SX+rDXidpu6p39s/nrdJUVjfZ1OHeREapfxGnVcPBe7FllmW0tpfjtRNhIlmPqhVI1d0rLRu1NwV7XCkRXdWXTssSq541hA8ROaw1WiRu1+pnbrVvS8EBOnyvdO6ZW2Ixj9DBNnAqlqbzxCVKieADeSMiWvg1D2ZcNTKVD5sKZf550yMaWJqwFAYjCYQIPQ/MRjr3I09hNW8097SVziUsG6bdXT7Dr3qz20U9WInrvPKbcS/tuyTZPRsRmSVcxDScCAK+lOHBKrXtTSrD1LwFibu9cAJgxOw0FD9rDOski2Voxbe5s+I3HrA03S2DXdzqyXo7KrTQY6GhckUmnJu/R2qDbzNdx8ZDx9ht7cEppovNa2RWNBxxEOjQ05WCd62vx3XeEb+Kh+zaYs/DNXT82k8fCFZvT3fW0cfHbszEmXg8Np1hodH65PZt0+rbA4pbGhrPH57xwJTDT4ioWvWywFsrSPjsQ12wxy2kxDSrZyfvvEn2KTV/BZ3UD6wICADU5u/3WWVJwJoO9FQExba4SjFdOeoBQMHAwyJ3LXR3dE4S+BHF1RQAwr4fAAWmx0vHoRu+HzlnOQOwP21POEDn8FQIkN3AiGjNAITRQtwtQw2oRhyY/J5uRyTkJnQ5m116I5wtRs75VSN0L3Bv2zd5/7P4KIgjM7U/LFCphin8MeVVgUMQJGSDXLKCKp+vJpk2aGm1ID8kclwcOSme1dBhCRfVgoOW86tdkoNccPlLQK1q2RsNbR0TsDlZ/FbZYbBQ7YYQMuP19uENWjWTckqYwHP5SQ2dwNirUfsG85/NF6kIFp5HQsZ93jgM6+c/sxFqq2gvh9S+Gb9s0/zqo6VpxtFSWEmkd0yT600JImPuVuS4g+6/xV34hyEA3j13xhXvKZekRl1C84xHVJKUusO44dyGUL2kgYfTWZHYYnX19wYxpkGOJtCUBs+oFME7MBLeEi6urd2WAWT++KohrzcNsGHs3pnrxvx4ARj9iyEcILeo8PR2L0LE6RvOFEUiiGr/hvEBXZfPO06XgIRgB/DEvrMn+rvh/QS3dZIywBdJj5Qc9W/4lLfeSwP5VzKtiTvLuLNXx58SEPVQflqeI8lYoafw/jbPo9n5ALrkRQAM2iEio0Ttfl99HIXc+h6NoH9NWIlDa4xfr/iZ9NKTOAi+Oz1KqXBasfBsPtjl7g39G/Y6NaoFg5jpZ9zE2+BXsyCdyBpRhHJbMY0G8WFTS6LPMr0Kr1yOOeEg+pxodxtcWQM7R4fZZRb3q1/VJWAFIADBfMSjrO4pjd+RSbl+WlEn6IOiIKlBCgc9ho/PGQVUx/WQtlZRQVyniVcUJodzFGf8c/CsPNUbFzWp1aWLMaAp2UQnU3AkezxU0UZrPLWN/cQxJ2Yaxn3qEjsxwBa3v5TlcQDZ2ftwEawWZeYY6mtIjJjntTXFTPct91noZZDLDxgD5SfSkJ7CF1wBCZKsIpNfQHKe4du8/eCYDjQjS67DTbE2WD6qNTT5xb+h5SHAzeZL0K1UAy8CpGeGWV828FSVnqKUt7FyOUiEVz5mlStPzypcFaRD5UV/QrjDSumBwZjOO+Uxu9lDa1vqWg0YbMMTEx307WjK2WKmd1lNRqm5iol6iYuwE9kPV5wO7wz5W0oKk8JJnrrMJoJwLlHcaMc/E1hAxN+j4EmeSEq3JD2wzbrOqBR28//YCHLBFMlEUf9Ql9RMYZJYRj15MAht8lXbUyaNFGCFTkhrlc2wO3p70K6ybmmQPgdwIP+KmH6kWgWFjP46REG0iQ/ffxjaV1c4EZqUreKf9c9oPmrTk6LesBYJ1Cz4JmG89T4QgIENfYr9Gks13qCDzlPUfG3Wpn5XmVDGLdB7J8DY0DHvyh5I13reseaaYSbxaPjYrhfy4sE+LwT0BR6dPqntvw6H1WD23sdNEY4EeHZXlEMCxogDstu2Xeck/v4oZ6myjO/iDOxqP4OhfZ8hpQkwWwYGZs5HuulcHouOfA2qpdjKF+QFcSbEjQKAhv5t0WtVleAUtzoMR9u4Jr98EU2wPpbL18QZWu/8kc1lkAj848H23aeujzLt1/1BZfkKcjqSg/G8QhrwWjfwb10WRrvBcrIKEvJ3FHGn0GtKxgmk0YTvQ3QAwVFRXQufs0fM9URjpaFNbqo75gPKCfEBSHlUgQsZr6e4ZhMcREeStx4DHhRIBdFGAfnnrO6XvpDlwFocqZxJWT73G7UzHoegZeMTtE53sHDIba1PmOgwBnGqbvxO1CWns5nQr1ZNcKpYZMS1vp7PAfjor73E2LRDfW7esJxuNhZsZ7QPAoUhkxe21plqQFWx/VwzcZNqhROAoCqNQ5LQ80uj628GPu1IMwNM9HM+DgHSKc6ilfSqlg0QeDF708MFH7q3M9wwHgjH0nW6gOzymgnA2oaYLyAUk0lBIahI4H+0e4Wt/Wm5SMRvrI55GuTMaabzETHrr0cusdVS7YY6igYGuEGQqgCEmPJCNPLcP7+EepeMAWD2Hqj/Oq/Yb1Q0d9J14ZPMC3qQsleTywg0eIQZh0i7K+//i9hQCX7UaXQ4NBK4Ji72LdfG5jqqrE3XyEnNatlxUg0oZ/TJdOTt6FvBfI8Q0UUaMQ7iulr3HtY/WbUQLc2FOh9trgWnrmE7BOpd4uamPvyE+U9wtbyNwUqkki5iYb/CW6I56VvszFyg/C04JK0TVhELDypphQTvPuTzSZOvVxOiCde/Uzt5z3IqajeQNDwFvQ6FVti7YiO7iAUOeRwXOuvibzOrMOiaJCQKvMl434kLWPt3XBnxFsugQp6Y0OupmFAoYRcoTrMQJtpH/LdOjOe7G2TLfwJz0Fihb1ypn4RO1WTOUayeY4DbzU18qEydVSKQWbf4jzM9u0y8MLYZdrIZKnTi6ff01HcKIOssPDYGBAUA9Xxa6nXdlXpjqwrjnBW3YhHE4ejNlpA/DuGq3Eqd2FvxFGR7V4eq4GMKuMx6wC8VPVCxQY9lEB/7rQQGETDvp/ZxcvBz26ulfMKa05dRKuLjBEe1J4SAvH7mime9uM3IpARhDvEI85cxqzFzxPd2MMrOvdpyi/TbTUzxHt107FZIyG03H+K9/+b9verGpNDc+VbG8xIWh4ViHnMrbY38No8F9CpfnN51oAapJa4pttdekBLldXS1v37S5ui2rt2dQQ/W0xjqhe8J/vPf2cKob3A7PFQjZlIjKrC0BZpVk55Qe6tZGSfhzqkSgRLs98HLaOEi1FxHJvNxtZQUPhFRI/+DXtZXz9hFWeaHn1TgB7h7LXvI6cG45v6l71l0wUNtLkr4EvS5rXL1e36yKWKP++11gk791KdUlCyzgyJQE/PlKHyFgI77c7PFqzJ08so2XEKhNiTFph9N765nsEZ8oSTFVH9euBYV/HXQuPEPn+U9Vng5VwrHitk4FVbyz3I1X1H96Z2dV1XkP/BhH/jvyYiRoSff9s2ifYP2EyLfjkflWbZD58B2y5syyO6RmeDjmRlGvXDQmYQfhxyTbyuFM52sPnau2ZvyhfxTVBwdxLowq0aF0m24YrIUUFCMdrSjLdHjnrgCi0ZzCV9RdpRbZ/52RT7id9w7U5jXcQVW6RCtcz0twpFtLPTO+hBUwvXjaZrEvZLNTBP8xntk88qYFkd5o19R3Bh63kOI059peIW2djegIiWol2jxMtUTk42I7LTNtg15a54RXtatbcmKNcW483f7FBL2fe/q2G2/cWQu+aAkV7IWsaEd2P1cYfTPUFVERaWPYlRgJwsdPCiP22OFi94QRF/fifv/3ynAfj12TWCxFkkvY/cqe6HJG9t/Xa2LXA5Yt9JNwkJcpOqymfWcHgodjo/G76AY9hi0B50z23iyuKrIFNlY+rv5FIldxu7YSE90nPJAcIQPc+8LsSoTSDl+rL1AsiG5OYQdmBM/Uk2tXdZ+X8j2FfMp4VnK7ukFdW7lHSeebMp2HpXTOIz3p1musQx3ZIZcaHcrug0G+azCRz2q7AsAQnmj4/2Ycy905/Kedu1l88W2XlCRDjA3irDS6dxIhQAXTNF5Ffds2lh/5gdHCgbgFccH9UCtjl6EJL0H2hrD1w6fsuLJcIVInOpRumWJ0jdIuCQQfXBp9VWfjb/5VImOKy++kmOlvnrpYJD4VnRrHO9oBlBq9GpkGzuh0eqEh9Vw77RDWMDzlmpRTojGVR5NvlvHTh0S5r66WAZpOYcFgpBTGAkV3i0gqcxvuzgEFg4nm7YQG/y1NpVRAqCd6EW3aBkAssIGJRC1RNv9YJuCz32mhE6GXsC0odxVYgPgSiGQqdHPM5/It9b2QGQY+XmoTlrrhaQ4tGWEwwAzD7L64Lx/lVg4i4qra6niPQOT22sqrc3+oXd0Q3acFOb7kUvXUpFbESKK5z2p/QmwJxqnBFAAaNp9GBujx9I5lWlVrUxyHor0+UXK8NYfZVniRQspD4aWtXPXD+42NqG0V/0HaRRCUSNJtkVfu+Id7FW6UOEmkttL2XueaFq8IYGCbSnmUyLKxpMYaa/PZ594nlAaghtHTOO7v7wCIIIb/bMKrVv1Y4AHjysxiV5Y/8t6CbU/2W1axCitTlud5xN8BqLG/9OqXzRcc5xEBpuDOIlANaJHzNYf8UhoxtsOwYY382qmsOnWBfLa2MpMy5M20A2T95dIcVHKlTQTNV0Sbbjq0I4p+EXcp7uXFc1fFmFCJ4Mvseu6jLgOm0fh+Fu1wMlCp+CLEviaS5Tr5CQNwPQn+hCIEwbovBElyh+E82hbQEalp/EMt7EVRzKV5sxOjYEW3+0Yxeb+mFOeyorL+Mo0NpJiemkznfZXMzpfTC7klqHmscFBiU+WFqOnC/k37aBGa/re9Cqt5fujiRKGjvwk45zB6kd+7MJBFVyJXXbpK/lOCbzfSof+ehxTxk7TbrFgSmg4jrA6LeSUxZt7WkoFaLeaENO+xNUXUfAJrfwDQ5NddGGROOFmXETBQS/Rq+bVjL5tbbTDGEg9Ov3Jap5BiDI9sXx+c/qK6D99CnI8tBjjxAaAQflDqbZ+rmj4jrX7mXj8wOr+E2B13kpSYOLDkSpd8niQrBcYWhskO4eDKtqMqdYQn0rrkKL0wQxodkoTLvXRp/y8H3s8loVIxlwtA7+wDfNekYZkK2TQ1WwK/tjWr2LWWqKcE3Fprf1NRAsb9vwXuWsdE4x+cvWP40k20FxtwbxGYL/UrCcpW1KhkPmUPv6w53c+680TK2AWjSOk6iKAg86XXL/fJpJxHpmkG4IaO88qx4Wt2JkDW/xRpapW3EtHiP9jUY3cTrximATHeHpF1al88psW3VK9VmeZlqjac11rWxRRmd1yjcERuVTttPsPOe7tXTdEyl1lJImjjIPdPIKickKlOjcew7DTOOkglRP4pIA5hbNl8Kj6K0B16jN3wcUAqwv8KbBwmcx0Km/z/JrIJVaEx/5OMdXIJJfNaHeRMy6mcvJEDDSpXjxjXHYNeaMh8eB2EU4ZsiKHBjcj8PwUCJXn5U6DQonwCRgUEfu8P+R9LX2LRtF+O2CPuwg1PesV7sDJsLCvX2t5csKV6RiLEQDMtikvTloemQeMvQnbOLqDVHbKcjHak7BOa6SQMs1sEwgVkKZ2DIGHCuDHSlK5pa2DEVkfexQ/AbRuLCtnuDSR8Lyf2tSw/yFftgRUAwkiUlC0QW10+lzSqY/g2OtJODOFsrnoJH1TRrfZ/0zrgB3pL5HhJGuWCPY/OjxHdhTtljyq744/vI18B35rD0j2glpiF/vJTgV+pIvC9T1eE0wzbbWN8qqPJQSSqUC8Rf2aFCr3/w5Xvydsi+Xu1WxmiqJhU6nWG6q8K/mwXk/Ob20GvO2prJaYZ1Jok7LYZQybBsB0ChDHEEEvEPv69pz9daRPyMAFLDKNNqtOusWs2d1WQ3yNq79SwVhRL568nliAOJjvh4UX6GqryQkuR2UaoBRv6refRmlhYK7potJ5wh7bEPZg0+iT6L9X1c+OEfN1hePu6gA/GVTzgZLEHRvv0xoAZ0GSnNbcWi6ab5KnWNo3Bf7XvozwGvwvA329T2eVYAUhVytv8AVWlpxCpo14MduVqP2CW/9V52WSiwmglytnswsDBBqXjd9JTl1L/ac4ZVrfY45EdrLihHvlibuC9pQNPZFXVykF7ILHmsWrpIJ0PDWh68GxKOTpu7/X3hF+rCocQdtWALkVQbPW+yWZMpwhs6mWvw9cQ2FnGuyUNngxGOdUSzTJyPWGqHThiZ9UvvxLLKmslrNuP1Ed9b+LAnE9BTS6k32gNfn8TwPnDfrSXf9TQoIkpLORa5O7Uw92R5bkbXasR/OtAFHMAd/s+MvVr4piL5kQAbeIVxfRPqChg8kRbmqIRwdiDw1UjqmIRyiuUY3hCUfyZA32dc+OWbkW9uKW8yriSCgW0tLfmwHB5CgtjoXD0XYTBf0e5yJmoMtNgNTvKXICLoIpDRJPJ2KBuwVC8V8+kYV/5/oBq2z615MUzzZJRlgUPrXthcdrAKEHKPJemGh4s0TmgVwdogoxWm114MTpuQ9kgfhDhlI1QSb+dq+f3jAIc7Ja6rgpn8jztmKdkAcnbjcBgmRdxsLrXZvH0PR9Uxe+PkGiVAwDhc5z4Z6erYRJzzKZZS75uLYQ477CAzJ2aNTxI4ExVFBGLQzzypIUzbBoZSlnI1qc+lIhCtKRIHk1IIVO6KVWrTX6YDC+13oY4k/VidpgjZmvK6yq0bLT3+QYQzdPZE8YROJ4ZoYtXcDgjq1yOz8KUCOqsFKVtYCq2qsjgF8I1Bd3agblXvvrXsVaUxPaejg8/34vXC6hPsN33aXOWgUygULG2MYarLVPOFs3gxTb3vQhxFp9JLhhRL0gR4/HFJbvyFZeT1K7XPfxzSweap9MPUx/9W+mFp8JLHeBLxKjCvPOEWjku6uvajIFI79j54o3A2Rwmr153Ay10zdI+16tz1UKwD308kk+btx8Ck1/SEANTMvR10vNQNvDppnZ4V4rJvhz8+IPl0rsDwD8YNMrSnZaISWCS3RbJfopVR+sQz42KE7azXdk1+0Fx2H2WMP35fYAcouoODeC4OF4M8LbvfK3Axy4GsH15c6oC35e6Uw2jVo322BVTOf0sPs6f8psV+OGKCrEI8sa7pEBKKLwb/QiH0ZAANhsmAQzCV0v1e/5/EUamZ90VPl5eHVI7WkaHP/3vD89bhkGgh5T+jpYGEoVEvvKLpcX7844ud4mVhuUrHLqTI6QmeLxt31RliKi0MID4Pw6NINxtAfs1UOi6ApSKe4XJe5QUR4YRyJIkyOCD7XAT7dpRnu+jqCso88MvTPvcp7yIQ3rySrQUoAW1oObfosue4RDMTBszHOkGfLNl7f+qvb2/K74MMGCz4zeP0nO7qe7WPp6sSrEzUIsObxkL+SyqSC3jyxi2DEFJpr3sUGCWwZxTqJuBcBtxVnc85wcox3DPXk4kOV+hTZMr7tRpv46VRVBX2LwvnvChQGNk0+Ei1B+ZchmIb/eg/Tq7lMBj4yRgIxuK5MKUVprzNNOF4RoNT5Hd8eUz1VtAoesC0Be8OfqfdE6jIZMteGW0LdrEblT6nda1vDfhAB5Bb24gQl6l+Hd2b8vf47hqykHl/hgevm+SyjQhnC5xrmFb0QJBhkIFviWQkSCmtfAVM7rWGJ4+t7ymEbQo9HbeyrkfGqeE1HJjrFh1Km0ADnt8FB5Ufuh6gO8vuovog+HpOXzwNDpGlSEJsytqlfddU75oYBb8rcncATXJ8DaJgnB4HbLbEcPjR+ky4QpYwPsbpw1zfdOUITVPxsjdvhkLJtB9nkEBzpTZg5xEqGIKfq3CBeJR9Et+4sn1DXN9M9qSeBUBGYLqWy01XHu6T+qqg9sBtfftrvdAXHybo9iUGFey50GYO1SzEGJ+2pQPDaQpAQ1PqdTy5d5Gy6hkqlLheafJZS1FBBYRfC5cDcs7+04FaJbDO0YoeIflXWQgUYy3XU49X18Y5bkfRJLHGz0UQSaKl5+MfUm/pNIwoR4AL4O8mC3RFGbl1KTyrY61x1BQZnO9apuvhE7/nLeUwufVf7OtdpeYk4d4drSB66rG51dXF5osCTZlawWNHAAb5tFW6FsS1haETHrTj1ryn1nydmeR5m+W8Fi9sHjABrWkTc/1Q/30ptre/1xqqg9w3aOTD3WhcauFOQxn3asfodz54ikXHAaaoKuwp98FKXVLBmP8yAbQ9RNp2OBBmdmkc6Menu0EGYCgvV8qLKErEf8EGluSalI2EiWtPr3F5QLvRui7hrGBvuai4GUNo3M9T0WJJDKipCEIiW3TiKE3dUPz4/lDdBIU5PbOITdvTqkbD6CjbSpUoIsQU1BdyHS1JziEi/ZXLOXbc//6oXssjwSWtzWme7W7XcK1eOMrJO8eU4x7PQ5dKYaB8IsNf8C9l5f+3GsiHavqVAuNWvc091/JsZvVPvgJJD/H9BBPR25mo/gjfIW34EhpFXNoXvh4l+i/a/NZK+Yn/S9EWIzoxQXdvWospD1J5TA+EGUI+yf4cq10h4Pltg6fCem2X8GRWCRzsJRtAgEwFrX692heciHBQymiRf7ODD9vQykuB5IaCGjpRnEUONffRg8ulccyObi3Rvd+Ud3/enbRIeSHb9Y2OLeW7yBA5GBU7SCw8yUzRV63ix/EgVC3P4yvbeLm/L3iqJ3t5Q1y3tYAHXtE+PqsJdSQ5v+8AvY/oGM8hWe6Lhfgn6m0ErC4KghzeoodDHVE2tRff4h0pvR0luqg8BjyZa8HIKPlVfx6nNiK0neQE6AYvyeEE3H2WN2XwscsmHL7LzopWt3PWl3kqpTwTZ7AfXMfGgIvR6lj/2GPP1MWVYnr0jW4Dp8D+Gj7i74voVCfGdDqWGSYfzkHBoc1sNZUB7aqt8Hzaa7q65vIgEK0xCG7V3M8EIbgatfngmn+QgOX63TUkwSx9CPlOzOqeCBOoDOXvAGEXpCjEc4c42nF4V80iRdGTkOqrnfBWOHk09v3hWgxgu2nH8bawU1Kd9hZoeop8v34uRzdORIxN0pPADnGDtISGSb1t8aCCsKoMgmX1GcqfEE1eRd1Wpcoxi2WSwGBkfjowAvxiYHVb9y7p/oCtdf0zzisEXCF4KGAYSxtQPWNtExaXbx7+hQmq2MQmNSPfoiVQ72/vBybrI6G4fKYhGnQQI8MoDAVTpnM3t/mHfnuvO6yEOe3FtZsDBcr0M2Xe74fUW+H74L/1caYWE26dnMNsfCuEdn8yXNajISasUhoUxbr3sxHqWwHh4nK/gf1AOz9RAp4qVOVEVtMu1ZuhXkTisBwbTQpvp4d2ZXQphY7y0Xlod0Yc5bheGrWVjNjRv2RWZnXQ0NIiLSu1xagWIzoy9Y49AAAA"
-                         alt="Selfie-Box von Foto Weber in Rottweil">
-                </div>
-
-                <a class="preis"
-                   href="#kontakt"
-                   title="Fotobox ab 299 Euro – Verfügbarkeit in Rottweil anfragen"
-                   aria-label="Fotobox ab 299 Euro – Verfügbarkeit in Rottweil anfragen">
-                    <small>Rundum-Sorglos</small>
-                    <strong>299 €</strong>
-                    <span>Verfügbarkeit prüfen</span>
-                </a>
-
-                <div class="orange-label">Top-Qualität vom Fotofachmann</div>
-                <div class="gruen-label">Fotobox mit Drucker</div>
-            </div>
-
-        </div>
-    </section>
-
-    <div class="vorteil-leiste">
-        <div class="vorteil">Persönlicher Ansprechpartner</div>
-        <div class="vorteil">Inklusive Requisiten</div>
-        <div class="vorteil">Sofortdruck möglich</div>
-        <div class="vorteil">Digitale Fotoflatrate</div>
-        <div class="vorteil">KI & Greenscreen</div>
-        <div class="vorteil">Rottweil & Region</div>
-    </div>
-
-    <section class="section center" id="vorteile">
-
-        <div class="eyebrow">Foto Weber Fotobox</div>
-        <h2>Warum unsere Fotoboxen bei Feiern so gut ankommen</h2>
-
-        <p class="lead">
-            Professionelle Fototechnik, einfache Bedienung und verschiedene Systeme
-            für Hochzeit, Geburtstag, Firmenfeier und Messe.
-        </p>
-
-        <div class="feature-grid">
-
-            <div class="feature">
-                <div class="icon">▣</div>
-                <div>
-                    <h3>Foto-Sofortdruck</h3>
-                    <p>Ausdrucke direkt vor Ort in professioneller Fotoqualität.</p>
-                </div>
-            </div>
-
-            <div class="feature">
-                <div class="icon">↗</div>
-                <div>
-                    <h3>Direkter Download</h3>
-                    <p>Fotos bequem digital auf das Smartphone laden.</p>
-                </div>
-            </div>
-
-            <div class="feature">
-                <div class="icon">∞</div>
-                <div>
-                    <h3>Digitale Flatrate</h3>
-                    <p>Viele Erinnerungen ohne komplizierte Einzelabrechnung.</p>
-                </div>
-            </div>
-
-            <div class="feature">
-                <div class="icon">☻</div>
-                <div>
-                    <h3>Kinderleichte Bedienung</h3>
-                    <p>Einfach und intuitiv für Gäste aller Altersgruppen.</p>
-                </div>
-            </div>
-
-            <div class="feature">
-                <div class="icon">✦</div>
-                <div>
-                    <h3>KI & Greenscreen</h3>
-                    <p>Kreative Hintergründe, Stadtansichten und Firmenlogos.</p>
-                </div>
-            </div>
-
-            <div class="feature">
-                <div class="icon">☎</div>
-                <div>
-                    <h3>Persönlicher Service</h3>
-                    <p>Direkter Ansprechpartner rund um Ihre Veranstaltung.</p>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <section class="boxen" id="boxen">
-        <div class="section center">
-
-            <div class="eyebrow">Unsere 3 Fotobox-Systeme für Rottweil</div>
-            <h2>Die passende Fotobox für jeden Anlass</h2>
-
-            <p class="lead">
-                Vom kompakten System bis zum begehbaren Fotostudio auf Rädern.
-            </p>
-
-            <div class="box-grid">
-
-                <article class="box-card">
-                    <img src="data:image/webp;base64,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"
-                         alt="Selfie-Box Foto Weber Rottweil">
-                    <div class="body">
-                        <h3>Die Selfie-Box</h3>
-                        <p>
-                            Kompakt, modern und zuverlässig für Geburtstag,
-                            Firmenfeier, Messe und Hochzeit. Mit Touchscreen,
-                            Sofortdruck und QR-Code-Download.
-                        </p>
-                    </div>
-                </article>
-
-                <article class="box-card">
-                    <img src="data:image/webp;base64,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"
-                         alt="Historische Retrobox 1893 Foto Weber">
-                    <div class="body">
-                        <h3>Historische Retrobox (1893)</h3>
-                        <p>
-                            Das stilvolle Echtholz-Unikat im Vintagedesign.
-                            Ideal für Hochzeiten, Galas und besondere Veranstaltungen.
-                        </p>
-                    </div>
-                </article>
-
-                <article class="box-card">
-                    <img src="data:image/webp;base64,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"
-                         alt="Fotobox-Wohnwagen Rottweil Foto Weber">
-                    <div class="body">
-                        <h3>Kult-Fotobox-Wohnwagen</h3>
-                        <p>
-                            Das begehbare Fotostudio auf Rädern. Ein außergewöhnliches
-                            Highlight für Freiflächen, Hotelgärten und Outdoor-Events.
-                        </p>
-                    </div>
-                </article>
-
-            </div>
-        </div>
-    </section>
-
-    <section class="section center">
-
-        <div class="eyebrow">Beliebte Suchanfragen</div>
-        <h2>Fotobox mieten in Rottweil – wonach Interessenten suchen</h2>
-
-        <div class="trend-grid">
-
-            <div class="trend-card">
-                <h3>Anlassbezogene Suchanfragen</h3>
-                <ul>
-                    <li><strong>Fotobox mieten Hochzeit / Photobooth Hochzeit</strong></li>
-                    <li><strong>Fotobox Geburtstag mieten</strong></li>
-                    <li><strong>Fotobox Firmenfeier / Fotobox Messe</strong></li>
-                </ul>
-            </div>
-
-            <div class="trend-card">
-                <h3>Lokale & preisbezogene Suchen</h3>
-                <ul>
-                    <li><strong>Fotobox mieten Rottweil</strong></li>
-                    <li><strong>Fotobox mieten Preis</strong></li>
-                    <li><strong>Fotobox Kosten</strong></li>
-                </ul>
-            </div>
-
-            <div class="trend-card">
-                <h3>Technische Features</h3>
-                <ul>
-                    <li><strong>Fotobox mit Drucker / Sofortdruck</strong></li>
-                    <li><strong>KI Fotobox / AI Hintergrund</strong></li>
-                    <li><strong>Greenscreen</strong></li>
-                </ul>
-            </div>
-
-        </div>
-    </section>
-
-    <section class="faq-bereich" id="faq">
-        <div class="section center">
-
-            <div class="eyebrow">FAQ</div>
-            <h2>Häufige Fragen zu Fotobox mieten in Rottweil</h2>
-
-            <p class="lead">
-                Die Fragen bleiben bewusst vollständig auf der Seite,
-                damit Interessenten und Suchmaschinen klare Antworten erhalten.
-            </p>
-
-            <div class="faq-shell">
-
-                <div class="faq-kategorie">Anlässe & Verleih in Rottweil</div>
-
-                <details class="faq" open>
-                    <summary>Wo kann ich eine Fotobox für Hochzeit, Geburtstag oder Firmenfeier in Rottweil mieten?</summary>
-                    <p>
-                        Bei <strong>Foto Weber</strong> können Sie professionelle Selfie-Boxen,
-                        die historische Retrobox (1893) sowie den Fotobox-Wohnwagen
-                        für Rottweil, Göllsdorf, Hausen und den gesamten Landkreis mieten.
-                    </p>
-                </details>
-
-                <details class="faq">
-                    <summary>Welche Vorteile bietet ein Photobooth für eine Hochzeit in Rottweil?</summary>
-                    <p>
-                        Ein <strong>Photobooth bei der Hochzeit</strong> sorgt für Unterhaltung,
-                        schafft ungezwungene Erinnerungsfotos und liefert dank
-                        <strong>Sofortdruck</strong> direkt Bilder für Gäste oder Gästebuch.
-                    </p>
-                </details>
-
-                <div class="faq-kategorie">Preise, Kosten & Technik</div>
-
-                <details class="faq">
-                    <summary>Wie hoch sind die Fotobox Kosten bzw. der Fotobox mieten Preis in Rottweil?</summary>
-                    <p>
-                        Unsere Fotobox-Angebote starten ab <strong>299,00 €</strong>.
-                        Je nach gewähltem System und Ausstattung sind unter anderem
-                        Anlieferung, Aufbau, Drucker und digitale Flatrate möglich.
-                    </p>
-                </details>
-
-                <details class="faq">
-                    <summary>Bieten Sie eine Fotobox mit Drucker für Sofortdrucke vor Ort an?</summary>
-                    <p>
-                        <strong>Ja.</strong> Unsere Systeme können mit Highspeed-Fotodruckern
-                        ausgestattet werden, die Ausdrucke in professioneller Fotoqualität
-                        direkt auf der Veranstaltung ausgeben.
-                    </p>
-                </details>
-
-                <details class="faq">
-                    <summary>Wie funktionieren KI Fotobox, AI Hintergrund und Greenscreen?</summary>
-                    <p>
-                        Mit Greenscreen und <strong>KI-/AI-Hintergründen</strong>
-                        lassen sich die Fotohintergründe digital austauschen –
-                        beispielsweise gegen Firmenlogos, Rottweiler Motive oder Partydesigns.
-                    </p>
-                </details>
-
-            </div>
-        </div>
-    </section>
-
-<?php if ($status === 'success'): ?>
-    <section class="kontakt-section" style="margin-top:40px">
-        <div class="kontakt-card" style="text-align:center">
-            <div style="width:82px;height:82px;border-radius:50%;background:#77bd00;color:#fff;
-                        display:grid;place-items:center;margin:0 auto 22px;font-size:42px;font-weight:900">✓</div>
-            <div class="eyebrow">Anfrage gesendet</div>
-            <h2 style="margin-top:0">Vielen Dank für Ihre Fotobox-Anfrage!</h2>
-            <p style="font-size:17px;line-height:1.6;color:#5f6b73">
-                Ihre Anfrage aus <strong>Rottweil</strong> wurde an
-                <strong>Foto Weber</strong> übermittelt.
-                Wir melden uns persönlich bei Ihnen.
-            </p>
-            <p style="margin-top:20px">
-                <strong>Telefon:</strong> 07474 6248 ·
-                <strong>E-Mail:</strong> foto-weber-haigerloch@t-online.de
-            </p>
-            <p style="margin-top:24px">
-                <a class="btn-primary" href="https://www.fotoweber.de/selfie-boxen-foto-boxen/">
-                    Fotobox-Angebote ansehen
-                </a>
-            </p>
-        </div>
-    </section>
-<?php elseif ($status === 'error'): ?>
-    <section class="kontakt-section" style="margin-top:40px">
-        <div class="kontakt-card" style="border-color:#f1c8bd;background:#fff8f5">
-            <div class="eyebrow">Bitte prüfen</div>
-            <h2 style="margin-top:0">Die Anfrage konnte noch nicht gesendet werden.</h2>
-            <p style="font-size:17px;line-height:1.6;color:#5f6b73">
-                <?= htmlspecialchars($error_message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>
-            </p>
-            <p>
-                Alternativ erreichen Sie uns unter <strong>07474 6248</strong>
-                oder <strong>foto-weber-haigerloch@t-online.de</strong>.
-            </p>
-        </div>
-    </section>
-<?php endif; ?>
-
-    <?php if ($status !== "success"): ?>
-    <section class="kontakt-section" id="kontakt">
-        <div class="kontakt-card">
-
-            <div class="kontakt-head">
-                <div class="eyebrow">Unverbindlich anfragen</div>
-                <h2>Ist Ihre Wunsch-Fotobox in Rottweil noch verfügbar?</h2>
-                <p>
-                    Schicken Sie uns kurz die wichtigsten Daten zu Ihrer Veranstaltung.
-                    Die Anfrage wird direkt an Foto Weber übermittelt.
-                </p>
-            </div>
-
-            <form action="" method="post" accept-charset="UTF-8">
-
-                <input type="hidden" name="stadt" value="Rottweil">
-                <input type="hidden" name="quelle" value="Fotobox-Regio Rottweil">
-                <input type="hidden" name="form_id" value="fotobox-rottweil-2026">
-
-                <div class="hp-field" aria-hidden="true">
-                    <label for="website">Bitte dieses Feld leer lassen</label>
-                    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
-                </div>
-
-                <div class="formular-grid">
-
-                    <div class="formular-feld">
-                        <label for="name">Name *</label>
-                        <input type="text" id="name" name="name" maxlength="100" autocomplete="name" value="<?= h($name) ?>" required>
-                    </div>
-
-                    <div class="formular-feld">
-                        <label for="email">E-Mail *</label>
-                        <input type="email" id="email" name="email" maxlength="160" autocomplete="email" value="<?= h($email) ?>" required>
-                    </div>
-
-                    <div class="formular-feld">
-                        <label for="telefon">Telefon</label>
-                        <input type="tel" id="telefon" name="telefon" maxlength="50" autocomplete="tel" value="<?= h($telefon) ?>">
-                    </div>
-
-                    <div class="formular-feld">
-                        <label for="datum">Veranstaltungsdatum</label>
-                        <input type="date" id="datum" name="datum" value="<?= h($datum) ?>">
-                    </div>
-
-                    <div class="formular-feld">
-                        <label for="ort">Veranstaltungsort</label>
-                        <input type="text" id="ort" name="ort" maxlength="120" value="<?= h($ort !== '' ? $ort : 'Rottweil') ?>">
-                    </div>
-
-                    <div class="formular-feld">
-                        <label for="box">Welche Fotobox interessiert Sie?</label>
-                        <select id="box" name="box">
-                            <option value="">Bitte auswählen</option>
-                            <option value="Selfie-Box" <?= $box === "Selfie-Box" ? "selected" : "" ?>>Selfie-Box</option>
-                            <option value="Retrobox 1893" <?= $box === "Retrobox 1893" ? "selected" : "" ?>>Retrobox 1893</option>
-                            <option value="Fotobox-Wohnwagen" <?= $box === "Fotobox-Wohnwagen" ? "selected" : "" ?>>Fotobox-Wohnwagen</option>
-                            <option value="Noch unsicher" <?= $box === "Noch unsicher" ? "selected" : "" ?>>Noch unsicher / Beratung gewünscht</option>
-                        </select>
-                    </div>
-
-                    <div class="formular-feld">
-                        <label for="anlass">Anlass</label>
-                        <select id="anlass" name="anlass">
-                            <option value="">Bitte auswählen</option>
-                            <option value="Hochzeit" <?= $anlass === "Hochzeit" ? "selected" : "" ?>>Hochzeit</option>
-                            <option value="Geburtstag" <?= $anlass === "Geburtstag" ? "selected" : "" ?>>Geburtstag</option>
-                            <option value="Firmenfeier" <?= $anlass === "Firmenfeier" ? "selected" : "" ?>>Firmenfeier</option>
-                            <option value="Messe" <?= $anlass === "Messe" ? "selected" : "" ?>>Messe</option>
-                            <option value="Vereinsfeier" <?= $anlass === "Vereinsfeier" ? "selected" : "" ?>>Vereinsfeier</option>
-                            <option value="Sonstiges" <?= $anlass === "Sonstiges" ? "selected" : "" ?>>Sonstiges</option>
-                        </select>
-                    </div>
-
-                    <div class="formular-feld">
-                        <label for="gaeste">Ungefähre Gästezahl</label>
-                        <input type="number" id="gaeste" name="gaeste" min="1" max="5000" inputmode="numeric" value="<?= h($gaeste) ?>">
-                    </div>
-
-                    <div class="formular-feld full">
-                        <label for="nachricht">Ihre Nachricht</label>
-                        <textarea id="nachricht" name="nachricht" maxlength="3000" placeholder="Benötigen Sie Ausdrucke? Gibt es besondere Wünsche?"><?= h($nachricht) ?></textarea>
-                    </div>
-
-                </div>
-
-                <label class="datenschutz-zeile">
-                    <input type="checkbox" name="datenschutz" value="ja" required>
-                    <span>
-                        Ich stimme der Verarbeitung meiner Angaben zur Bearbeitung meiner Anfrage zu. *
-                    </span>
-                </label>
-
-                <div class="kontakt-actions">
-                    <button type="submit" class="btn-primary kontakt-submit">
-                        Fotobox unverbindlich anfragen
-                    </button>
-
-                    <div class="direkt-kontakt">
-                        Oder direkt: <strong>07474 6248</strong> ·
-                        <strong>01520 7007585</strong>
-                    </div>
-                </div>
-
-                <p class="formular-hinweis">
-                    * Pflichtfelder. Die Formulardaten werden ausschließlich zur Bearbeitung
-                    Ihrer Fotobox-Anfrage übermittelt.
-                </p>
-
-            </form>
-        </div>
-    </section>
-    <?php endif; ?>
-
-    <section class="cta">
-        <div>
-            <h2>Sie möchten zuerst alle Fotobox-Angebote ansehen?</h2>
-            <p>
-                Selfie-Box, Retrobox und Fotobox-Wohnwagen im Überblick.
-            </p>
-        </div>
-
-        <a class="btn-primary" href="https://www.fotoweber.de/selfie-boxen-foto-boxen/">
-            Alle Fotoboxen ansehen
-        </a>
-    </section>
-
-    <footer>
-        Ein Angebot von <strong>Foto Weber</strong> ·
-        Fotobox mieten Rottweil · Photobooth Hochzeit ·
-        Fotobox mit Drucker · Sofortdruck · KI-/AI-Hintergrund
-    </footer>
+<div class="topline">
+Fotoboxen für Hochzeit, Firmenfeier & Event · Persönlicher Service aus Haigerloch · Sofortdruck & digitale Downloads
+</div>
+
+<nav class="nav">
+
+<div class="nav-inner">
+
+<a class="brand"
+href="https://www.fotoweber.de/selfie-boxen-foto-boxen/">
+
+<div class="logo">
+FW
+</div>
+
+<div>
+
+<strong>
+FOTO WEBER
+</strong>
+
+<small>
+Fotobox-Regio · Rottweil
+</small>
+
+</div>
+
+</a>
+
+<div class="links">
+
+<a href="#boxen">
+Fotoboxen
+</a>
+
+<a href="#vorteile">
+Vorteile
+</a>
+
+<a href="#faq">
+FAQ
+</a>
+
+<a href="#kontakt">
+Kontakt & Anfrage
+</a>
+
+</div>
+
+<a class="nav-button"
+href="#kontakt">
+Jetzt anfragen
+</a>
+
+</div>
+
+</nav>
+
+<section class="hero">
+
+<div class="hero-inner">
+
+<div>
+
+<div class="kicker">
+Fotobox mieten in Rottweil & Region
+</div>
+
+<h1>
+
+<span>
+Garantierter
+</span>
+
+<span>
+Partyspaß mit
+</span>
+
+<em>
+Foto Weber
+</em>
+
+</h1>
+
+<p>
+Sie suchen nach
+<strong>„Fotobox mieten Rottweil“</strong>,
+einer professionellen
+<strong>„Fotobox mit Drucker“</strong>
+oder einer
+<strong>„Photobooth Hochzeit“</strong>?
+
+Bei Foto Weber mieten Sie Selfie-Boxen,
+die historische Retrobox und den
+Kult-Fotobox-Wohnwagen für Hochzeit,
+Geburtstag, Firmenfeier und Messe.
+</p>
+
+<div class="hero-actions">
+
+<a class="btn"
+href="#kontakt">
+Jetzt Verfügbarkeit prüfen
+</a>
+
+<a class="btn btn-secondary"
+href="#faq">
+Fragen & Antworten
+</a>
+
+</div>
+
+</div>
+
+<div class="hero-media">
+
+<img
+src="https://image.jimcdn.com/app/cms/image/transf/dimension%3D301x10000%3Aformat%3Djpg/path/sd95cb70a65c3d2bf/image/i6951bf14bf0c55ee/version/1681197334/image.jpg"
+alt="Selfie-Box von Foto Weber">
+
+<a class="preis"
+href="#kontakt">
+
+<small>
+Rundum-Sorglos
+</small>
+
+<strong>
+299 €
+</strong>
+
+<span>
+Verfügbarkeit prüfen
+</span>
+
+</a>
+
+</div>
+
+</div>
+
+</section>
+
+<div class="pills">
+
+<div class="pill">
+Persönlicher Ansprechpartner
+</div>
+
+<div class="pill">
+Inklusive Requisiten
+</div>
+
+<div class="pill">
+Sofortdruck möglich
+</div>
+
+<div class="pill">
+Digitale Fotoflatrate
+</div>
+
+<div class="pill">
+KI & Greenscreen
+</div>
+
+<div class="pill">
+Rottweil & Region
+</div>
+
+</div>
+
+<section class="section center"
+id="vorteile">
+
+<div class="eyebrow">
+Foto Weber Fotobox
+</div>
+
+<h2>
+Warum unsere Fotoboxen bei Feiern so gut ankommen
+</h2>
+
+<p class="lead">
+Professionelle Fototechnik, einfache Bedienung und persönliche Betreuung für Hochzeit, Geburtstag, Firmenfeier und Messe.
+</p>
+
+<div class="features">
+
+<div class="feature">
+
+<h3>
+Foto-Sofortdruck
+</h3>
+
+<p>
+Ausdrucke direkt vor Ort in professioneller Fotoqualität.
+</p>
+
+</div>
+
+<div class="feature">
+
+<h3>
+Direkter Download
+</h3>
+
+<p>
+Fotos bequem digital auf das Smartphone laden.
+</p>
+
+</div>
+
+<div class="feature">
+
+<h3>
+Digitale Flatrate
+</h3>
+
+<p>
+Viele Erinnerungen ohne komplizierte Einzelabrechnung.
+</p>
+
+</div>
+
+<div class="feature">
+
+<h3>
+Kinderleichte Bedienung
+</h3>
+
+<p>
+Einfach und intuitiv für Gäste aller Altersgruppen.
+</p>
+
+</div>
+
+<div class="feature">
+
+<h3>
+KI & Greenscreen
+</h3>
+
+<p>
+Kreative Hintergründe, Stadtansichten und Firmenlogos.
+</p>
+
+</div>
+
+<div class="feature">
+
+<h3>
+Persönlicher Service
+</h3>
+
+<p>
+Direkter Ansprechpartner rund um Ihre Veranstaltung.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="section center"
+id="boxen">
+
+<div class="eyebrow">
+Unsere 3 Fotobox-Systeme für Rottweil
+</div>
+
+<h2>
+Die passende Fotobox für jeden Anlass
+</h2>
+
+<p class="lead">
+Vom kompakten System bis zum begehbaren Fotostudio auf Rädern.
+</p>
+
+<div class="cards">
+
+<article class="card">
+
+<img
+src="https://image.jimcdn.com/app/cms/image/transf/dimension%3D301x10000%3Aformat%3Djpg/path/sd95cb70a65c3d2bf/image/i6951bf14bf0c55ee/version/1681197334/image.jpg"
+alt="Selfie-Box Foto Weber Rottweil">
+
+<div class="body">
+
+<h3>
+Die Selfie-Box
+</h3>
+
+<p>
+Kompakt, modern und zuverlässig für Geburtstag, Firmenfeier, Messe und Hochzeit. Mit Sofortdruck und digitalem Download.
+</p>
+
+</div>
+
+</article>
+
+<article class="card">
+
+<img
+src="https://image.jimcdn.com/app/cms/image/transf/dimension%3D137x10000%3Aformat%3Djpg/path/sd95cb70a65c3d2bf/image/i2f08a092b5b371ca/version/1681197517/image.jpg"
+alt="Historische Retrobox Foto Weber">
+
+<div class="body">
+
+<h3>
+Historische Retrobox
+</h3>
+
+<p>
+Das stilvolle Echtholz-Unikat im Vintagedesign. Ideal für Hochzeiten, Galas und besondere Veranstaltungen.
+</p>
+
+</div>
+
+</article>
+
+<article class="card">
+
+<img
+src="https://image.jimcdn.com/app/cms/image/transf/dimension%3D664x10000%3Aformat%3Djpg/path/sd95cb70a65c3d2bf/image/ie737fbc768925a64/version/1777487732/image.jpg"
+alt="Fotobox-Wohnwagen Foto Weber">
+
+<div class="body">
+
+<h3>
+Kult-Fotobox-Wohnwagen
+</h3>
+
+<p>
+Das begehbare Fotostudio auf Rädern. Ein außergewöhnliches Highlight für Freiflächen, Hotelgärten und Outdoor-Events.
+</p>
+
+</div>
+
+</article>
+
+</div>
+
+</section>
+
+<section class="section center">
+
+<div class="eyebrow">
+Beliebte Suchanfragen
+</div>
+
+<h2>
+Fotobox mieten in Rottweil – wonach Interessenten suchen
+</h2>
+
+<div class="trends">
+
+<div class="trend">
+
+<h3>
+Anlass
+</h3>
+
+<ul>
+<li>Fotobox mieten Hochzeit</li>
+<li>Photobooth Hochzeit</li>
+<li>Fotobox Geburtstag mieten</li>
+<li>Fotobox Firmenfeier</li>
+<li>Fotobox Messe</li>
+</ul>
+
+</div>
+
+<div class="trend">
+
+<h3>
+Region & Preis
+</h3>
+
+<ul>
+<li>Fotobox mieten Rottweil</li>
+<li>Fotobox mieten Preis</li>
+<li>Fotobox Kosten</li>
+<li>Fotobox Rottweil mit Drucker</li>
+</ul>
+
+</div>
+
+<div class="trend">
+
+<h3>
+Technik
+</h3>
+
+<ul>
+<li>Fotobox mit Drucker</li>
+<li>Sofortdruck</li>
+<li>KI Fotobox</li>
+<li>AI Hintergrund</li>
+<li>Greenscreen</li>
+</ul>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="faq-wrap"
+id="faq">
+
+<div class="section center">
+
+<div class="eyebrow">
+FAQ
+</div>
+
+<h2>
+Häufige Fragen zu Fotobox mieten in Rottweil
+</h2>
+
+<div class="faq-list">
+
+<details open>
+
+<summary>
+Wo kann ich eine Fotobox für Hochzeit, Geburtstag oder Firmenfeier in Rottweil mieten?
+</summary>
+
+<p>
+Bei <strong>Foto Weber</strong> können Sie Selfie-Boxen, die historische Retrobox sowie den Fotobox-Wohnwagen für Rottweil und die gesamte Region mieten.
+</p>
+
+</details>
+
+<details>
+
+<summary>
+Welche Vorteile bietet ein Photobooth für eine Hochzeit in Rottweil?
+</summary>
+
+<p>
+Ein Photobooth sorgt für Unterhaltung, ungezwungene Erinnerungsfotos und auf Wunsch Sofortdrucke für Gäste oder Gästebuch.
+</p>
+
+</details>
+
+<details>
+
+<summary>
+Wie hoch sind die Fotobox Kosten bzw. der Fotobox mieten Preis in Rottweil?
+</summary>
+
+<p>
+Unsere Fotobox-Angebote starten ab
+<strong>299,00 €</strong>.
+Die konkrete Ausstattung richtet sich nach gewähltem System und Veranstaltung.
+</p>
+
+</details>
+
+<details>
+
+<summary>
+Bieten Sie eine Fotobox mit Drucker für Sofortdrucke vor Ort an?
+</summary>
+
+<p>
+<strong>Ja.</strong>
+Unsere Systeme können mit Highspeed-Fotodruckern für Ausdrucke direkt auf der Veranstaltung ausgestattet werden.
+</p>
+
+</details>
+
+<details>
+
+<summary>
+Wie funktionieren KI Fotobox, AI Hintergrund und Greenscreen?
+</summary>
+
+<p>
+Mit Greenscreen und KI-/AI-Hintergründen lassen sich Fotohintergründe digital austauschen, zum Beispiel gegen Firmenlogos, Stadtansichten oder Partymotive.
+</p>
+
+</details>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="kontakt"
+id="kontakt">
+
+<div class="kontakt-card">
+
+<div class="eyebrow">
+Unverbindlich anfragen
+</div>
+
+<h2>
+Ist Ihre Wunsch-Fotobox in Rottweil noch verfügbar?
+</h2>
+
+<p class="lead"
+style="margin:0;text-align:left">
+Schicken Sie uns kurz die wichtigsten Daten zu Ihrer Veranstaltung.
+</p>
+
+<form id="kontaktForm">
+
+<div class="formgrid">
+
+<div class="field">
+
+<label for="name">
+Name *
+</label>
+
+<input
+id="name"
+name="name"
+type="text"
+required>
+
+</div>
+
+<div class="field">
+
+<label for="email">
+E-Mail *
+</label>
+
+<input
+id="email"
+name="email"
+type="email"
+required>
+
+</div>
+
+<div class="field">
+
+<label for="telefon">
+Telefon
+</label>
+
+<input
+id="telefon"
+name="telefon"
+type="tel">
+
+</div>
+
+<div class="field">
+
+<label for="datum">
+Veranstaltungsdatum
+</label>
+
+<input
+id="datum"
+name="datum"
+type="date">
+
+</div>
+
+<div class="field">
+
+<label for="ort">
+Veranstaltungsort
+</label>
+
+<input
+id="ort"
+name="ort"
+type="text"
+value="Rottweil">
+
+</div>
+
+<div class="field">
+
+<label for="box">
+Welche Fotobox interessiert Sie?
+</label>
+
+<select
+id="box"
+name="box">
+
+<option value="">
+Bitte auswählen
+</option>
+
+<option>
+Selfie-Box
+</option>
+
+<option>
+Retrobox
+</option>
+
+<option>
+Fotobox-Wohnwagen
+</option>
+
+<option>
+Noch unsicher / Beratung gewünscht
+</option>
+
+</select>
+
+</div>
+
+<div class="field">
+
+<label for="anlass">
+Anlass
+</label>
+
+<select
+id="anlass"
+name="anlass">
+
+<option value="">
+Bitte auswählen
+</option>
+
+<option>
+Hochzeit
+</option>
+
+<option>
+Geburtstag
+</option>
+
+<option>
+Firmenfeier
+</option>
+
+<option>
+Messe
+</option>
+
+<option>
+Vereinsfeier
+</option>
+
+<option>
+Sonstiges
+</option>
+
+</select>
+
+</div>
+
+<div class="field">
+
+<label for="gaeste">
+Ungefähre Gästezahl
+</label>
+
+<input
+id="gaeste"
+name="gaeste"
+type="number"
+min="1">
+
+</div>
+
+<div class="field full">
+
+<label for="nachricht">
+Ihre Nachricht
+</label>
+
+<textarea
+id="nachricht"
+name="nachricht"
+placeholder="Benötigen Sie Ausdrucke? Gibt es besondere Wünsche?">
+</textarea>
+
+</div>
+
+</div>
+
+<label class="check">
+
+<input
+type="checkbox"
+id="datenschutz"
+required>
+
+<span>
+Ich stimme der Verarbeitung meiner Angaben zur Bearbeitung meiner Anfrage zu. *
+</span>
+
+</label>
+
+<button
+class="btn"
+type="submit">
+Fotobox unverbindlich anfragen
+</button>
+
+<p class="note">
+* Pflichtfelder. Bei dieser GitHub-Version öffnet sich beim Absenden Ihr E-Mail-Programm mit der bereits ausgefüllten Anfrage an Foto Weber.
+</p>
+
+</form>
+
+</div>
+
+</section>
+
+<footer>
+
+Ein Angebot von
+<strong>Foto Weber</strong>
+· Telefon 07474 6248
+· WhatsApp 01520 7007585
+· Fotobox mieten Rottweil
+
+</footer>
+
+<script>
+
+document
+.getElementById("kontaktForm")
+.addEventListener("submit",function(e){
+
+e.preventDefault();
+
+if(
+!document.getElementById("datenschutz").checked
+){
+
+alert(
+"Bitte bestätigen Sie die Datenschutz-Zustimmung."
+);
+
+return;
+
+}
+
+const g=id=>
+document
+.getElementById(id)
+.value
+.trim();
+
+const betreff=[
+"Fotobox-Anfrage aus Rottweil",
+g("anlass"),
+g("datum")
+]
+.filter(Boolean)
+.join(" – ");
+
+const text=[
+
+"Neue Fotobox-Anfrage",
+
+"=====================",
+
+"",
+
+"Landingpage / Stadt: Rottweil",
+
+"",
+
+"Name: "+g("name"),
+
+"E-Mail: "+g("email"),
+
+"Telefon: "+(
+g("telefon")
+||
+"nicht angegeben"
+),
+
+"Veranstaltungsdatum: "+(
+g("datum")
+||
+"nicht angegeben"
+),
+
+"Veranstaltungsort: "+(
+g("ort")
+||
+"Rottweil"
+),
+
+"Fotobox: "+(
+g("box")
+||
+"noch nicht ausgewählt"
+),
+
+"Anlass: "+(
+g("anlass")
+||
+"nicht angegeben"
+),
+
+"Gästezahl: "+(
+g("gaeste")
+||
+"nicht angegeben"
+),
+
+"",
+
+"Nachricht:",
+
+g("nachricht")
+||
+"keine zusätzliche Nachricht"
+
+]
+.join("\n");
+
+location.href=
+
+"mailto:foto-weber-haigerloch@t-online.de"
+
++
+"?subject="
++
+encodeURIComponent(betreff)
+
++
+"&body="
++
+encodeURIComponent(text);
+
+});
+
+</script>
 
 </body>
 </html>
