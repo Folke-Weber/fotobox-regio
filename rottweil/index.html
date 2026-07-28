@@ -91,14 +91,26 @@
     </script>
 
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; max-width: 900px; margin: auto; background-color: #ffffff; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; max-width: 950px; margin: auto; background-color: #ffffff; }
         header { text-align: center; padding: 30px 20px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; }
         h1 { color: #111; margin-bottom: 10px; font-size: 1.8em; }
         .sub-header { font-size: 1.1em; color: #555; margin-bottom: 15px; }
         .badge { display: inline-block; background-color: #0d6efd; color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9em; margin-bottom: 15px; }
-        .btn { display: inline-block; background-color: #e63946; color: white; padding: 15px 30px; text-decoration: none; font-weight: bold; border-radius: 5px; margin-top: 15px; font-size: 1.1em; }
+        
+        /* Primärer Call To Action Button */
+        .btn { display: inline-block; background-color: #e63946; color: white; padding: 16px 32px; text-decoration: none; font-weight: bold; border-radius: 6px; margin-top: 15px; font-size: 1.15em; box-shadow: 0 4px 10px rgba(230,57,70,0.3); transition: background-color 0.2s; }
         .btn:hover { background-color: #c1121f; }
+        
         .redirect-notice { background-color: #e7f5ff; border: 1px solid #a5d8ff; padding: 12px; border-radius: 6px; text-align: center; margin: 20px 0; font-size: 0.95em; }
+        
+        /* 3er Bilder-Galerie Styling */
+        .gallery-grid { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin: 30px 0; }
+        .gallery-card { flex: 1; min-width: 270px; max-width: 300px; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .gallery-card img { width: 100%; height: 210px; object-fit: cover; display: block; }
+        .gallery-card-body { padding: 15px; text-align: left; }
+        .gallery-card-body h3 { margin-top: 0; color: #111; font-size: 1.1em; }
+        .gallery-card-body p { font-size: 0.88em; color: #555; margin-bottom: 0; }
+
         .highlight-box { background-color: #fff9db; border: 2px solid #fcc419; padding: 20px; border-radius: 8px; margin: 25px 0; }
         .highlight-box h2 { margin-top: 0; color: #e67700; font-size: 1.35em; }
         .quick-facts { background-color: #e6fcf5; border: 2px solid #20c997; padding: 20px; border-radius: 8px; margin: 25px 0; }
@@ -120,12 +132,48 @@
         <h1>Fotobox-Wohnwagen, Retrobox & Fotobox in Rottweil mieten</h1>
         <p class="sub-header">Ihr exklusiver Verleihpartner für Event-Fotoboxen in der ältesten Stadt Baden-Württembergs. Ob Outdoor-Sensation mit unserem <strong>Kult-Fotobox-Wohnwagen inkl. Greenscreen</strong> auf Freiflächen Rottweiler Top-Hotels, stilvolle Hochzeiten im <strong>Kraftwerk Rottweil</strong>, Tagungen im <strong>Hotel Lamm</strong> & <strong>Parkhotel Wehrle</strong> oder Feste in der <strong>Festhalle Rottweil</strong> – mit <strong>Foto Weber</strong> wird Ihr Event garantiert unvergesslich!</p>
         
-        <a href="https://www.fotoweber.de/selfie-boxen-foto-boxen/" class="btn">Jetzt Verfügbarkeit & Angebote auf fotoweber.de prüfen</a>
+        <!-- CALL TO ACTION (HEADER) -->
+        <a href="https://www.fotoweber.de/selfie-boxen-foto-boxen/" class="btn">👉 Jetzt Verfügbarkeit & Angebote für Rottweil prüfen</a>
     </header>
 
     <div class="redirect-notice">
         ⏱️ Sie werden in <strong>12 Sekunden</strong> automatisch zur Hauptseite auf <strong>fotoweber.de</strong> weitergeleitet...
     </div>
+
+    <!-- BILDER-GALERIE BEREICH -->
+    <section>
+        <h2 style="text-align: center; margin-top: 35px;">Unsere 3 Top-Systeme für Rottweil</h2>
+        <div class="gallery-grid">
+            
+            <!-- Bild 1: Retrobox 1893 -->
+            <div class="gallery-card">
+                <img src="retrobox-1893-rottweil.jpg" alt="Historische Retrobox 1893 von Foto Weber mit Studioblitz und Fotodrucker in Rottweil">
+                <div class="gallery-card-body">
+                    <h3>Historische Retrobox (1893)</h3>
+                    <p>Einzigartiges Echtholz-Unikat mit Studioblitz & integriertem Fotodrucker. Das edle Highlight für Hochzeiten & Gala-Events.</p>
+                </div>
+            </div>
+
+            <!-- Bild 2: Selfie-Box -->
+            <div class="gallery-card">
+                <img src="selfiebox-fotobox-rottweil.jpg" alt="Kompakte Selfie-Box von Foto Weber mieten in Rottweil">
+                <div class="gallery-card-body">
+                    <h3>Die mobile Selfie-Box</h3>
+                    <p>Kompakt, extrem robust und flexibel. Mit Touchscreen, Studioblitz, QR-Code-Live-Download und Fotodrucker.</p>
+                </div>
+            </div>
+
+            <!-- Bild 3: Fotobox Wohnwagen -->
+            <div class="gallery-card">
+                <img src="fotobox-wohnwagen-rottweil.jpg" alt="Kultiger Fotobox-Wohnwagen von Foto Weber mit Lichterkette und Liegestühlen für Events in Rottweil">
+                <div class="gallery-card-body">
+                    <h3>Kult-Fotobox-Wohnwagen</h3>
+                    <p>Das begehbare Fotostudio mit Greenscreen-Technologie & Outdoor-Garten-Feeling inklusive Beleuchtung & Liegestühlen.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
 
     <div class="highlight-box">
         <h2>🚗 DAS HIGHLIGHT IN ROTTWEIL: Der Kult-Fotobox-Wohnwagen mit Greenscreen</h2>
@@ -151,9 +199,9 @@
 
     <section>
         <h2>Perfekte Fotobox-Lösungen für Rottweils beste Eventhotels & Eventlocations</h2>
-        <p>Rottweil verbindet historische Kulisse mit einer starken Hotel- und Veranstaltungslandschaft. **Foto Weber** bietet maßgeschneidertes Equipment für jede Location in und um Rottweil:</p>
+        <p>Rottweil verbindet historische Kulisse mit einer starken Hotel- und Veranstaltungslandschaft. <strong>Foto Weber</strong> bietet maßgeschneidertes Equipment für jede Location in und um Rottweil:</p>
         <ul>
-            <li><strong>Eventhotels & Hotelgärten (z. B. Hotel Lamm, Parkhotel Wehrle, Hotel Bad):</strong> Platzieren Sie unseren **Fotobox-Wohnwagen** direkt im Außenbereich oder im Hotelgarten für den Sektempfang. Für die Indoor-Abendveranstaltung eignet sich unsere elegante **Retrobox (1893)** als stilvoller Blickfang.</li>
+            <li><strong>Eventhotels & Hotelgärten (z. B. Hotel Lamm, Parkhotel Wehrle, Hotel Bad):</strong> Platzieren Sie unseren <strong>Fotobox-Wohnwagen</strong> direkt im Außenbereich oder im Hotelgarten für den Sektempfang. Für die Indoor-Abendveranstaltung eignet sich unsere elegante <strong>Retrobox (1893)</strong> als stilvoller Blickfang.</li>
             <li><strong>Kraftwerk Rottweil & Industriearchitektur:</strong> Die eindrucksvolle Kulisse des Kraftwerks schreit geradezu nach exklusivem Equipment. Die Kombination aus echtem Echtholz-Design der Retrobox und modernster DSLR-Technik harmoniert perfekt mit dem industriellen Charme.</li>
             <li><strong>Festhallen & Tagungscenter in Rottweil:</strong> Schneller Aufbauservice, unkomplizierte Handhabung per Touchscreen und rasante Ausdrucke für hohe Gästezahlen.</li>
             <li><strong>B2B- & Tagungsevents:</strong> Bieten Sie Ihren Kongress- und Tagungsgästen in den Rottweiler Hotels ein interaktives Erlebnis mit Ihrem Firmenlogo auf jedem gedruckten Foto.</li>
@@ -204,11 +252,12 @@
         </div>
     </section>
 
-    <section style="text-align: center; background: #fff3bf; padding: 25px; border-radius: 8px;">
+    <!-- CALL TO ACTION (FOOTER-BEREICH) -->
+    <section style="text-align: center; background: #fff3bf; padding: 25px; border-radius: 8px; border: 2px solid #fcc419;">
         <h3>Hochzeit, Tagung oder Firmenevent in Rottweil geplant?</h3>
         <p>Sichern Sie sich den Fotobox-Wohnwagen mit Greenscreen, die Retrobox (1893) oder eine Selfie-Box von Folke Weber.</p>
         <p><strong>Telefon:</strong> 07474 6248 | <strong>WhatsApp:</strong> 01520 7007585</p>
-        <a href="https://www.fotoweber.de/selfie-boxen-foto-boxen/" class="btn">Jetzt Verfügbarkeit auf Fotoweber.de prüfen</a>
+        <a href="https://www.fotoweber.de/selfie-boxen-foto-boxen/" class="btn">Jetzt Wunschtermin auf Fotoweber.de sichern</a>
     </section>
 
     <footer>
