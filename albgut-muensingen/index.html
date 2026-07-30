@@ -1466,7 +1466,7 @@
 
             <div class="kontakt-head">
                 <div class="eyebrow">Unverbindlich anfragen</div>
-                <h2>Ist Ihre Wunsch-Fotobox auf dem Heuberg noch verfügbar?</h2>
+                <h2>Ist Ihre Wunsch-Fotobox auf dem Albgut Münsingen noch verfügbar?</h2>
                 <p>
                     Schicken Sie uns kurz die wichtigsten Daten zu Ihrer Veranstaltung.
                     Die Anfrage wird direkt an Foto Weber übermittelt.
@@ -1630,7 +1630,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        const subjectParts = ["Fotobox-Anfrage Heuberg – Wehingen / Gosheim"];
+        const subjectParts = ["Fotobox-Anfrage Albgut Münsingen"];
         if (get("anlass")) subjectParts.push(get("anlass"));
         if (get("datum")) subjectParts.push(get("datum"));
 
@@ -1656,7 +1656,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ].join("\n");
 
         window.location.href =
-            "mailto:foto-weber-@t-online.de" +
+            "mailto:foto-weber-haigerloch@t-online.de" +
             "?subject=" + encodeURIComponent(subject) +
             "&body=" + encodeURIComponent(body);
     });
