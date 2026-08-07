@@ -226,6 +226,23 @@ footer{background:#050605;color:rgba(255,255,255,.56);padding:28px 0 95px;font-s
 .footer-offer-links a{padding:7px 11px;border:1px solid rgba(255,255,255,.15);border-radius:999px}
 @media(max-width:900px){.offer-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:640px){.offer-grid{grid-template-columns:1fr}}
+
+.product-card{cursor:pointer;color:inherit;text-decoration:none}
+.product-card:focus-visible,.city-card:focus-visible,.business-tile:focus-visible{
+  outline:3px solid var(--acid);
+  outline-offset:4px;
+}
+.product-card .arrow-link{pointer-events:none}
+.business-tile{color:inherit;text-decoration:none}
+
+.inclusive-label{
+  margin:4px 0 4px;
+  font-size:.82rem;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.package.hot .inclusive-label{color:#101311}
 </style>
 </head>
 <body>
@@ -276,46 +293,46 @@ footer{background:#050605;color:rgba(255,255,255,.56);padding:28px 0 95px;font-s
 <p class="lead">Nicht jede Feier braucht dieselbe Fotobox. Deshalb gibt es bei Foto Weber die klassische Fotobox, Greenscreen, Retro Fotobox und den Selfie-Box-Wohnwagen.</p>
 </div>
 <div class="product-grid">
-<article class="product-card reveal">
+<a aria-label="Fotobox ansehen" class="product-card reveal" href="/fotobox-mit-sofortdruck/" style="color:inherit;text-decoration:none">
 <div class="product-image"><img alt="Klassische Fotobox von Foto Weber" data-photo="classic"/></div>
 <div class="product-body">
 <div class="product-no">01 · ALLROUNDER</div>
 <h3>Fotobox</h3>
 <p>Einfach hinstellen, loslegen, lachen und direkt ausdrucken. Für Hochzeit, Geburtstag, Verein und Firmenfeier.</p>
 <div class="product-tags"><span>400 Bilder</span><span>Sofortdruck</span><span>ohne Greenscreen</span></div>
-<div class="product-bottom"><div class="price">ab <strong>299 €</strong></div><a aria-label="Fotobox ansehen" class="arrow-link" href="/fotobox-mit-sofortdruck/">→</a></div>
+<div class="product-bottom"><div class="price">ab <strong>299 €</strong></div><span class="arrow-link">→</span></div>
 </div>
-</article>
-<article class="product-card reveal">
+</a>
+<a aria-label="Greenscreen ansehen" class="product-card reveal" href="/greenscreen-fotobox/" style="color:inherit;text-decoration:none">
 <div class="product-image"><img alt="Fotobox mit Greenscreen von Foto Weber" data-photo="greenscreen"/></div>
 <div class="product-body">
 <div class="product-no">02 · MAXIMALE AUSWAHL</div>
 <h3>Greenscreen</h3>
 <p>Wechselnde Hintergründe, starke Motive und individuelle Gestaltung für Hochzeit, Firma und Event.</p>
 <div class="product-tags"><span>bis 13 Hintergründe</span><span>400 Bilder</span><span>Branding</span></div>
-<div class="product-bottom"><div class="price">ab <strong>399 €</strong></div><a aria-label="Greenscreen ansehen" class="arrow-link" href="/greenscreen-fotobox/">→</a></div>
+<div class="product-bottom"><div class="price">ab <strong>399 €</strong></div><span class="arrow-link">→</span></div>
 </div>
-</article>
-<article class="product-card reveal">
+</a>
+<a aria-label="Retro Fotobox ansehen" class="product-card reveal" href="/retro-fotobox/" style="color:inherit;text-decoration:none">
 <div class="product-image"><img alt="Retro Fotobox mit Studioblitz von Foto Weber" data-photo="retro"/></div>
 <div class="product-body">
 <div class="product-no">03 · CHARAKTER</div>
 <h3>Retro Fotobox</h3>
 <p>Holz, Studioblitz und ein Auftritt, der selbst Teil der Dekoration wird – besonders stark für Hochzeiten und stilvolle Feiern.</p>
 <div class="product-tags"><span>Greenscreen</span><span>400 Bilder</span><span>Vintage-Look</span></div>
-<div class="product-bottom"><div class="price"><strong>799 €</strong></div><a aria-label="Retro Fotobox ansehen" class="arrow-link" href="/retro-fotobox/">→</a></div>
+<div class="product-bottom"><div class="price"><strong>799 €</strong></div><span class="arrow-link">→</span></div>
 </div>
-</article>
-<article class="product-card reveal">
+</a>
+<a aria-label="Selfie-Box-Wohnwagen ansehen" class="product-card reveal" href="/selfie-box-wohnwagen/" style="color:inherit;text-decoration:none">
 <div class="product-image"><img alt="Selfie-Box-Wohnwagen von Foto Weber" data-photo="wohnwagen"/></div>
 <div class="product-body">
 <div class="product-no">04 · DER HINGUCKER</div>
 <h3>Selfie-Box-Wohnwagen</h3>
 <p>Ein eigener Fotoraum und gleichzeitig Blickfang vor der Location. Ideal für Hochzeiten, Sommerfeste und besondere Events.</p>
 <div class="product-tags"><span>Wohnwagen</span><span>400 Bilder</span><span>Event-Highlight</span></div>
-<div class="product-bottom"><div class="price">Aktion <strong>749 €</strong></div><a aria-label="Selfie-Box-Wohnwagen ansehen" class="arrow-link" href="/selfie-box-wohnwagen/">→</a></div>
+<div class="product-bottom"><div class="price">Aktion <strong>749 €</strong></div><span class="arrow-link">→</span></div>
 </div>
-</article>
+</a>
 </div>
 </div>
 </section><section class="section alt" id="angebote">
@@ -565,10 +582,10 @@ footer{background:#050605;color:rgba(255,255,255,.56);padding:28px 0 95px;font-s
 </div>
 <a class="btn btn-primary" href="/fotobox-firmenfeier/" style="margin-top:24px;align-self:flex-start">Fotobox für Firmenfeier ansehen →</a></div>
 <div class="business-side">
-<div class="business-tile reveal" onclick="location.href='/fotobox-firmenfeier/'" onkeydown="if(event.key==='Enter'){location.href='/fotobox-firmenfeier/'}" role="link" style="cursor:pointer" tabindex="0"><div class="bt-icon">🎄</div><div><h3>Weihnachtsfeier</h3><p>Für Teams, Standorte und Jahresabschluss.</p></div></div>
-<div class="business-tile reveal" onclick="location.href='/fotobox-firmenfeier/'" onkeydown="if(event.key==='Enter'){location.href='/fotobox-firmenfeier/'}" role="link" style="cursor:pointer" tabindex="0"><div class="bt-icon">☀️</div><div><h3>Sommerfest</h3><p>Indoor oder Outdoor – unkompliziert und kommunikativ.</p></div></div>
-<div class="business-tile reveal" onclick="location.href='/fotobox-firmenfeier/'" onkeydown="if(event.key==='Enter'){location.href='/fotobox-firmenfeier/'}" role="link" style="cursor:pointer" tabindex="0"><div class="bt-icon">🏢</div><div><h3>Betriebsjubiläum</h3><p>Mit individuellem Layout und Firmenbezug.</p></div></div>
-<div class="business-tile reveal" onclick="location.href='/fotobox-firmenfeier/'" onkeydown="if(event.key==='Enter'){location.href='/fotobox-firmenfeier/'}" role="link" style="cursor:pointer" tabindex="0"><div class="bt-icon">🎪</div><div><h3>Messe &amp; Kundenevent</h3><p>Greenscreen und Branding als aufmerksamkeitsstarker Einsatz.</p></div></div>
+<a aria-label="🎄 Weihnachtsfeier Für Teams, Standorte und Jahresabschluss." class="business-tile reveal" href="/fotobox-firmenfeier/" style="color:inherit;text-decoration:none;cursor:pointer"><div class="bt-icon">🎄</div><div><h3>Weihnachtsfeier</h3><p>Für Teams, Standorte und Jahresabschluss.</p></div></a>
+<a aria-label="☀️ Sommerfest Indoor oder Outdoor – unkompliziert und kommunikativ." class="business-tile reveal" href="/fotobox-firmenfeier/" style="color:inherit;text-decoration:none;cursor:pointer"><div class="bt-icon">☀️</div><div><h3>Sommerfest</h3><p>Indoor oder Outdoor – unkompliziert und kommunikativ.</p></div></a>
+<a aria-label="🏢 Betriebsjubiläum Mit individuellem Layout und Firmenbezug." class="business-tile reveal" href="/fotobox-firmenfeier/" style="color:inherit;text-decoration:none;cursor:pointer"><div class="bt-icon">🏢</div><div><h3>Betriebsjubiläum</h3><p>Mit individuellem Layout und Firmenbezug.</p></div></a>
+<a aria-label="🎪 Messe &amp; Kundenevent Greenscreen und Branding als aufmerksamkeitsstarker Einsatz." class="business-tile reveal" href="/fotobox-firmenfeier/" style="color:inherit;text-decoration:none;cursor:pointer"><div class="bt-icon">🎪</div><div><h3>Messe &amp; Kundenevent</h3><p>Greenscreen und Branding als aufmerksamkeitsstarker Einsatz.</p></div></a>
 </div>
 </div>
 </div>
@@ -585,7 +602,7 @@ footer{background:#050605;color:rgba(255,255,255,.56);padding:28px 0 95px;font-s
 <article class="package reveal"><span class="badge">Greenscreen XL</span><div class="bigprice">599 €</div><h3>800 Bilder · mit Greenscreen</h3><ul><li>für größere Veranstaltungen</li><li>mehr Druckvolumen</li><li>ideal für viele Gäste</li></ul><a class="btn btn-primary" href="#anfrage">Anfragen →</a></article>
 <article class="package reveal"><span class="badge">Retro</span><div class="bigprice">799 €</div><h3>400 Bilder · Greenscreen</h3><ul><li>Retro Fotobox aus Holz</li><li>Studioblitz</li><li>starker Auftritt für Hochzeiten</li></ul><a class="btn btn-primary" href="#anfrage">Anfragen →</a></article>
 <article class="package reveal"><span class="badge">Wohnwagen Aktion</span><div class="bigprice">749 €</div><h3>400 Bilder · Wohnwagen</h3><ul><li>Selfie-Box-Wohnwagen</li><li>Fotobox inklusive</li><li>besonderer Blickfang</li></ul><a class="btn btn-primary" href="#anfrage">Anfragen →</a></article>
-<article class="package hot reveal"><span class="badge">Full House</span><div class="bigprice">999 €</div><h3>800 Bilder · QR · Extras</h3><ul><li>QR-Code</li><li>800 Bilder</li><li>Utensilienbox</li><li>Overlaygestaltung</li></ul><a class="btn" href="#anfrage" style="background:var(--ink);color:var(--acid)">Full House anfragen →</a></article>
+<article class="package hot reveal"><span class="badge">Selfie-Box-Wohnwagen</span><div class="bigprice">999 €</div><h3>Selfie-Box-Wohnwagen – Full House</h3><div class="inclusive-label">inklusive</div><ul><li>QR-Code</li><li>800 Bilder</li><li>Utensilienbox</li><li>Overlaygestaltung</li><li>Abgebetaschen</li></ul><a class="btn" href="#anfrage" style="background:var(--ink);color:var(--acid)">Full House anfragen →</a></article>
 </div>
 </div>
 </section>
