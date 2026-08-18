@@ -244,7 +244,7 @@ footer{background:#050605;color:rgba(255,255,255,.56);padding:28px 0 95px;font-s
 .match-visual img:first-child{grid-row:1/3}
 @media(max-width:760px){.match-visual{height:300px}}
 
-/* V117 – statische Direktbuchung ohne PHP + PayPal Coming Soon + mobile CTA, bewusst im bestehenden Fotobox-Regio-Design */
+/* V118 – Zahlungsbereich korrigiert + PayPal Coming Soon + mobile CTA, bewusst im bestehenden Fotobox-Regio-Design */
 .direct-booking{background:#0f1310;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .direct-intro{max-width:760px;margin-bottom:34px}
 .direct-intro .lead{max-width:680px}
@@ -267,7 +267,7 @@ footer{background:#050605;color:rgba(255,255,255,.56);padding:28px 0 95px;font-s
 .booking-field input,.booking-field select,.booking-field textarea{width:100%;border:1px solid var(--line);background:#0d100e;color:#fff;border-radius:14px;padding:13px 14px;outline:none}
 .booking-field textarea{min-height:84px;resize:vertical}.booking-field input:focus,.booking-field select:focus,.booking-field textarea:focus{border-color:var(--acid)}
 .availability-box{margin-top:12px;padding:13px 15px;border-radius:14px;background:#101411;border:1px solid var(--line);color:var(--muted);font-size:.88rem}.availability-box.ok{border-color:rgba(200,255,61,.5);color:#eaffb7;background:#131b10}.availability-box.bad{border-color:rgba(255,115,115,.4);color:#ffd0d0;background:#1a1010}
-.payment-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pay-choice{position:relative;cursor:pointer}.pay-choice input{position:absolute;opacity:0}.pay-card{border:1px solid var(--line);border-radius:18px;padding:16px;background:#101411;height:100%}.pay-card strong{display:block;font-size:1rem;margin-bottom:5px}.pay-card small{color:var(--muted)}.pay-choice input:checked + .pay-card{border-color:var(--acid);background:#182016;box-shadow:0 0 0 2px rgba(200,255,61,.15)}
+.payment-grid{display:grid;grid-template-columns:1fr;gap:10px}.pay-choice{position:relative;display:block;min-width:0;cursor:pointer}.pay-choice input{position:absolute;opacity:0;pointer-events:none}.pay-card{display:block;position:relative;border:1px solid var(--line);border-radius:18px;padding:18px;background:#101411;width:100%;min-height:0}.pay-card strong{display:block;font-size:1rem;margin-bottom:5px}.pay-card small{color:var(--muted)}.pay-choice input:checked + .pay-card{border-color:var(--acid);background:#182016;box-shadow:0 0 0 2px rgba(200,255,61,.15)}
 .booking-consent{display:flex;gap:10px;align-items:flex-start;margin-top:15px;color:var(--muted);font-size:.82rem}.booking-consent input{margin-top:4px;accent-color:var(--acid)}
 .summary-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--acid);font-weight:900;margin-bottom:18px}.summary-product{font-size:1.45rem;font-weight:900;line-height:1.05}.summary-price{font-size:3.4rem;font-weight:950;letter-spacing:-.055em;margin:12px 0 16px}.summary-list{display:grid;gap:10px;margin:18px 0 24px}.summary-row{display:flex;justify-content:space-between;gap:12px;padding-bottom:9px;border-bottom:1px solid var(--line);font-size:.9rem}.summary-row span:first-child{color:var(--muted)}.summary-row strong{text-align:right}
 .checkout-btn{width:100%;border:0;border-radius:999px;padding:15px 18px;font-weight:950;cursor:pointer;background:var(--acid);color:var(--ink);transition:.18s ease}.checkout-btn:hover{transform:translateY(-1px);background:#d7ff70}.checkout-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}.checkout-btn.bank{margin-top:9px;background:#fff;color:var(--ink)}
@@ -364,12 +364,22 @@ footer{background:#050605;color:rgba(255,255,255,.56);padding:28px 0 95px;font-s
   padding:8px 12px;border-radius:999px;background:var(--acid);color:var(--ink);
   font-size:.72rem;font-weight:950;letter-spacing:.08em;text-transform:uppercase
 }
-.pay-choice.paypal-disabled{cursor:default}
-.pay-choice.paypal-disabled .pay-card{opacity:.62;position:relative}
-.pay-choice.paypal-disabled .pay-card:after{
-  content:"COMING SOON";position:absolute;top:10px;right:10px;
-  background:var(--acid);color:var(--ink);font-size:.64rem;font-weight:950;
-  letter-spacing:.08em;padding:5px 8px;border-radius:999px
+
+
+
+.paypal-soon-row{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  width:100%;margin-bottom:10px;padding:14px 16px;border:1px solid var(--line);
+  border-radius:18px;background:#101411;color:var(--muted)
+}
+.paypal-soon-row strong{color:#fff;font-size:.95rem}
+.paypal-soon-row span{
+  flex:0 0 auto;background:var(--acid);color:var(--ink);border-radius:999px;
+  padding:7px 10px;font-size:.66rem;font-weight:950;letter-spacing:.08em;
+  text-transform:uppercase;white-space:nowrap
+}
+@media(max-width:650px){
+  .paypal-soon-row{align-items:flex-start;flex-direction:column}
 }
 
 </style>
@@ -778,8 +788,8 @@ footer{background:#050605;color:rgba(255,255,255,.56);padding:28px 0 95px;font-s
 </div>
 <div class="booking-step">
 <div class="booking-kicker"><span>4</span>Wie möchten Sie bezahlen?</div>
+<div class="paypal-soon-row"><div><strong>PayPal-Direktbuchung</strong><br><small>Die direkte PayPal-Zahlung wird gerade fertiggestellt und startet in Kürze.</small></div><span>COMING SOON</span></div>
 <div class="payment-grid">
-<label class="pay-choice paypal-disabled" aria-disabled="true"><input type="radio" name="payment" value="paypal" disabled><span class="pay-card"><strong>PayPal · demnächst</strong><small>Die direkte PayPal-Buchung wird gerade fertiggestellt und startet in Kürze.</small></span></label>
 <label class="pay-choice"><input type="radio" name="payment" value="bank" checked><span class="pay-card"><strong>Vorkasse / Reservierungswunsch</strong><small>Ihre Buchungsdaten werden als vorbereitete E-Mail an Foto Weber übergeben. Die Reservierung wird anschließend bestätigt.</small></span></label>
 </div>
 <div class="legal-consents">
@@ -1015,7 +1025,7 @@ if(regionSearch){
     document.getElementById('summaryDate').textContent=displayDate(date.value);
     document.getElementById('summaryLocation').textContent=locationInput.value.trim() || 'noch eintragen';
     const payment=selectedPayment();
-    document.getElementById('summaryPayment').textContent=payment==='paypal'?'PayPal · COMING SOON':'Vorkasse · Bestätigung per E-Mail';
+    document.getElementById('summaryPayment').textContent='Vorkasse · Bestätigung per E-Mail';
     paypalBtn.hidden=true;
     bankBtn.hidden=payment!=='bank';
     if(payment!=='paypal') paypalStage.hidden=true;
