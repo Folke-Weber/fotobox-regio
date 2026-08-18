@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FotoBox-Regio · PayPal Sandbox Test</title>
+<style>
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:#101411;color:#fff;
+    font-family:Arial,Helvetica,sans-serif;
+  }
+  .wrap{max-width:620px;margin:50px auto;padding:24px}
+  .card{
+    background:#171c18;border:1px solid #303a32;
+    border-radius:24px;padding:28px;
+    box-shadow:0 20px 60px rgba(0,0,0,.3)
+  }
+  .badge{
+    display:inline-block;background:#c8ff3d;color:#101411;
+    font-weight:900;font-size:12px;letter-spacing:.08em;
+    padding:8px 12px;border-radius:999px;
+  }
+  h1{font-size:42px;line-height:1.02;margin:18px 0 12px}
+  p{color:#b9c1bb;line-height:1.55}
+  .product{
+    margin:24px 0;padding:20px;border-radius:18px;
+    background:#0e120f;border:1px solid #2a342c
+  }
+  .product small{color:#aeb8b0}
+  .price{
+    color:#c8ff3d;font-size:50px;font-weight:900;
+    margin:7px 0
+  }
+  #paypal-button-container{margin-top:22px}
+  #status{
+    display:none;margin-top:20px;padding:16px;border-radius:14px;
+    line-height:1.5
+  }
+  #status.ok{display:block;background:#17311d;border:1px solid #477d4e}
+  #status.err{display:block;background:#371818;border:1px solid #925151}
+  .note{font-size:13px;color:#8e9991;margin-top:16px}
+</style>
+
+<!-- PayPal Sandbox shortcut. Kein echtes Geld. -->
+<script src="https://www.paypal.com/sdk/js?client-id=sb&currency=EUR&intent=capture"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <span class="badge">PAYPAL SANDBOX · TEST</span>
+    <h1>FotoBox-Regio<br>PayPal-Test</h1>
+    <p>Hier testen wir nur, ob der PayPal-Checkout grundsätzlich funktioniert. Es wird <b>kein echtes Geld</b> verwendet.</p>
+
+    <div class="product">
+      <small>TESTBUCHUNG</small>
+      <h2>Fotobox</h2>
+      <div class="price">299 €</div>
+      <small>400 Bilder · Sofortdruck · Abgabetaschen</small>
+    </div>
+
+    <div id="paypal-button-container"></div>
+    <div id="status"></div>
+
+    <div class="note">
+      Beim PayPal-Fenster ausschließlich mit einem PayPal-Sandbox-Testkonto anmelden.
+    </div>
+  </div>
+</div>
+
+<script>
+const statusBox = document.getElementById("status");
+
+paypal.Buttons({
+  style: {
+    layout: "vertical",
+    shape: "rect",
+    label: "paypal"
+  },
+
+  createOrder: function(data, actions) {
+    return actions.order.create({
+      purchase_units: [{
+        description: "FotoBox-Regio Sandbox Test – Fotobox",
+        amount: {
+          currency_code: "EUR",
+          value: "299.00"
+        }
+      }]
+    });
+  },
+
+  onApprove: function(data, actions) {
+    return actions.order.capture().then(function(details) {
+      statusBox.className = "ok";
+      statusBox.innerHTML =
+        "<strong>✓ Testzahlung erfolgreich</strong><br>" +
+        "PayPal Order-ID: " + data.orderID +
+        "<br>Status: " + (details.status || "COMPLETED");
+    });
+  },
+
+  onCancel: function() {
+    statusBox.className = "err";
+    statusBox.textContent = "Testzahlung wurde abgebrochen.";
+  },
+
+  onError: function(err) {
+    console.error(err);
+    statusBox.className = "err";
+    statusBox.textContent = "Beim PayPal-Test ist ein Fehler aufgetreten.";
+  }
+}).render("#paypal-button-container");
+</script>
+</body>
+</html>
