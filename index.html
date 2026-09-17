@@ -245,7 +245,7 @@ footer{background:#050605;color:rgba(255,255,255,.56);padding:28px 0 95px;font-s
 .match-visual img:first-child{grid-row:1/3}
 @media(max-width:760px){.match-visual{height:300px}}
 
-/* V125 – zentrale Preise + Firmenpreise korrigiert, bewusst im bestehenden Fotobox-Regio-Design */
+/* V126 – kompakter Firmenbereich + klare Privat/Firmen-Trennung, bewusst im bestehenden Fotobox-Regio-Design */
 .direct-booking{background:#0f1310;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .direct-intro{max-width:760px;margin-bottom:34px}
 .direct-intro .lead{max-width:680px}
@@ -401,6 +401,35 @@ footer{background:#050605;color:rgba(255,255,255,.56);padding:28px 0 95px;font-s
 .partner-note strong{color:#fff}
 @media(max-width:800px){.business-packages{grid-template-columns:1fr}.business-service-grid{grid-template-columns:1fr}}
 
+
+
+/* V126 – kompakter Firmenbereich auf der Homepage */
+.business-compact-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.business-compact-card{padding:24px;min-width:0}
+.business-compact-card h3{margin:18px 0 16px;font-size:1.15rem}
+.business-price-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:11px 0;border-top:1px solid rgba(127,127,127,.18)}
+.business-price-row span{color:var(--muted);font-size:.9rem}
+.business-price-row strong{font-size:1.6rem;line-height:1;color:var(--acid);white-space:nowrap}
+.package.hot .business-price-row strong{color:var(--ink)}
+.business-price-single{display:flex;align-items:baseline;gap:12px;margin:4px 0 8px}
+.business-price-single strong{font-size:2.6rem;line-height:1;letter-spacing:-.05em}
+.business-price-single span{font-size:.9rem;font-weight:800}
+.business-compact-card ul{margin-bottom:0}
+.business-compact-card li{font-size:.88rem}
+.business-service-strip{margin-top:16px;padding:16px 18px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.025);color:var(--muted);font-size:.92rem}
+.business-service-strip strong{color:#fff}
+.business-bottom-row{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;margin-top:18px;padding:18px 20px;border:1px solid rgba(200,255,61,.22);border-radius:20px;background:rgba(200,255,61,.055)}
+.business-bottom-row p{margin:0 0 6px;font-size:.9rem}
+.business-bottom-row .muted{color:var(--muted);margin-bottom:0}
+.business-main-cta{white-space:nowrap}
+@media(max-width:1050px){.business-compact-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){
+  .business-compact-grid{grid-template-columns:1fr}
+  .business-bottom-row{grid-template-columns:1fr}
+  .business-main-cta{width:100%;text-align:center}
+}
+
+section[id]{scroll-margin-top:105px}
 </style>
 </head>
 <body>
@@ -748,52 +777,82 @@ footer{background:#050605;color:rgba(255,255,255,.56);padding:28px 0 95px;font-s
 </div>
 </div>
 </section>
-<section class="section" id="firmenpakete-v119">
-<div class="container">
-<div class="eyebrow">Firmenfeier · Betriebsfeier · Firmenevent</div>
-<h2>Fotobox für Firmenfeier – mit Service, Branding &amp; Sofortdruck.</h2>
-<p class="lead">Für Betriebsfeier, Weihnachtsfeier, Sommerfest, Jubiläum, Kundenevent oder Messe: Foto Weber liefert nicht nur die Fotobox, sondern auf Wunsch das komplette Firmenpaket – mit Firmenlogo im Overlay, Utensilienbox, Versicherung, Abgabetaschen und 30-Minuten-Reaktionsservice bei technischen Problemen während der Veranstaltung.</p>
-<div class="business-service-grid">
-<div class="business-service"><strong>Firmenlogo inklusive</strong><p>Individuelles Overlay mit Ihrem Firmenlogo oder Veranstaltungsnamen.</p></div>
-<div class="business-service"><strong>Utensilienbox inklusive</strong><p>Requisiten für lockere Mitarbeiter- und Gästefotos direkt am Event.</p></div>
-<div class="business-service"><strong>30-Minuten-Reaktionsservice</strong><p>Bei technischen Problemen reagieren wir während der Veranstaltung innerhalb von maximal 30 Minuten.</p></div>
-<div class="business-service"><strong>Versicherung inklusive</strong><p>Für Firmenbuchungen im Businesspaket bereits berücksichtigt.</p></div>
-<div class="business-service"><strong>QR-Download</strong><p>Bilddownload ohne öffentliche Online-Galerie als Standard.</p></div>
-<div class="business-service"><strong>Aufbau &amp; Einweisung</strong><p>Persönlicher Service von Foto Weber Haigerloch – keine anonyme Versandbox.</p></div>
+<section class="section alt" id="firmenpakete-v119">
+<div class="wrap">
+<div class="section-head">
+<div>
+<div class="eyebrow">Firmenfeier · Businesspakete</div>
+<h2>Klare Firmenpreise.<br/>Ohne Kleingedrucktes.</h2>
 </div>
-<div class="business-packages">
-<article class="business-package featured"><div class="eyebrow">Standard Business</div><h3>Firmenpaket · 400 Bilder</h3><div class="price" data-price-key="business.standard400">490 €</div><ul>
-<li>400 Sofortdrucke 10×15 cm</li><li>Firmenlogo / individuelles Overlay</li><li>Utensilienbox</li><li>Versicherung</li><li>Abgabetaschen</li><li>QR-Download</li><li>Aufbau &amp; Einweisung</li><li>30-Minuten-Reaktionsservice</li>
-</ul></article>
-<article class="business-package"><div class="eyebrow">Standard Business XL</div><h3>Firmenpaket · 800 Bilder</h3><div class="price" data-price-key="business.standard800">590 €</div><ul>
-<li>800 Sofortdrucke 10×15 cm</li><li>Firmenlogo / individuelles Overlay</li><li>Utensilienbox</li><li>Versicherung</li><li>Abgabetaschen</li><li>QR-Download</li><li>Aufbau &amp; Einweisung</li><li>30-Minuten-Reaktionsservice</li>
-</ul></article>
-<article class="business-package"><div class="eyebrow">Retro Business</div><h3>Retrobox · 400 Bilder</h3><div class="price" data-price-key="business.retro400">890 €</div><ul>
-<li>Retro Fotobox mit Studioblitz</li><li>400 Sofortdrucke</li><li>Firmenlogo / Overlay</li><li>Utensilienbox &amp; Versicherung</li><li>Abgabetaschen &amp; QR-Download</li><li>30-Minuten-Reaktionsservice</li>
-</ul></article>
-<article class="business-package"><div class="eyebrow">Retro Business XL</div><h3>Retrobox · 800 Bilder</h3><div class="price" data-price-key="business.retro800">990 €</div><ul>
-<li>Retro Fotobox mit Studioblitz</li><li>800 Sofortdrucke</li><li>Firmenlogo / Overlay</li><li>Utensilienbox &amp; Versicherung</li><li>Abgabetaschen &amp; QR-Download</li><li>30-Minuten-Reaktionsservice</li>
-</ul></article>
-
-<article class="business-package"><div class="eyebrow">Wohnwagen Business</div><h3>Wohnwagen · 400 Bilder</h3><div class="price" data-price-key="business.wohnwagen400">890 €</div><ul>
-<li>Selfie-Box-Wohnwagen</li><li>400 Sofortdrucke</li><li>Firmenlogo / Overlay</li><li>Utensilienbox &amp; Versicherung</li><li>Abgabetaschen &amp; QR-Download</li><li>30-Minuten-Reaktionsservice</li>
-</ul></article>
-<article class="business-package"><div class="eyebrow">Wohnwagen Business XL</div><h3>Wohnwagen · 800 Bilder</h3><div class="price" data-price-key="business.wohnwagen800">990 €</div><ul>
-<li>Selfie-Box-Wohnwagen</li><li>800 Sofortdrucke</li><li>Firmenlogo / Overlay</li><li>Utensilienbox &amp; Versicherung</li><li>Abgabetaschen &amp; QR-Download</li><li>30-Minuten-Reaktionsservice</li>
-</ul></article>
-<article class="business-package featured"><div class="eyebrow">Full House</div><h3>Wohnwagen · alles drin</h3><div class="price" data-price-key="business.fullhouse800">999 €</div><ul>
-<li>800 Sofortdrucke</li><li>Greenscreen &amp; vorhandene Hintergründe</li><li>bis zu 4 eigene Wunschmotive als individuelle Hintergründe</li><li>Firmenlogo / individuelles Overlay</li><li>Utensilienbox &amp; Versicherung</li><li>Abgabetaschen &amp; QR-Download</li><li>30-Minuten-Reaktionsservice</li>
-</ul></article>
+<p class="lead">Für Betriebsfeier, Weihnachtsfeier, Sommerparty, Jubiläum, Messe oder Kundenevent. Mit Firmenlogo, Sofortdruck und persönlichem Service.</p>
 </div>
-<div class="references-line"><strong>Erfahrung bei Firmenveranstaltungen u. a. für:</strong> fischer · Wacker · MEVA · Bosch · Kern · Voilap · EDEKA</div>
-<div class="partner-note"><strong>Regional betreut. Überregional vernetzt.</strong> Foto Weber Haigerloch ist Teil eines Selfie-Box-Partnernetzwerks mit über 110 Kollegen und Standorten. Bei größeren oder parallelen Firmenveranstaltungen können wir bei Bedarf auf erfahrene Partner aus dem Netzwerk zurückgreifen.</div>
+<div class="business-compact-grid">
+<article class="package business-compact-card">
+<span class="badge">Standard Business</span>
+<h3>Fotobox mit Firmenpaket</h3>
+<div class="business-price-row"><span>400 Bilder</span><strong data-price-key="business.standard400">490 €</strong></div>
+<div class="business-price-row"><span>800 Bilder</span><strong data-price-key="business.standard800">590 €</strong></div>
+<ul>
+<li>Firmenlogo / individuelles Overlay</li>
+<li>Utensilienbox &amp; Versicherung</li>
+<li>QR-Download &amp; Abgabetaschen</li>
+<li>30-Minuten-Reaktionsservice</li>
+</ul>
+</article>
+<article class="package business-compact-card">
+<span class="badge">Retro Business</span>
+<h3>Retrobox mit Studioblitz</h3>
+<div class="business-price-row"><span>400 Bilder</span><strong data-price-key="business.retro400">890 €</strong></div>
+<div class="business-price-row"><span>800 Bilder</span><strong data-price-key="business.retro800">990 €</strong></div>
+<ul>
+<li>Retro Fotobox aus Holz</li>
+<li>Firmenlogo / individuelles Overlay</li>
+<li>Utensilienbox &amp; Versicherung</li>
+<li>30-Minuten-Reaktionsservice</li>
+</ul>
+</article>
+<article class="package business-compact-card">
+<span class="badge">Wohnwagen Business</span>
+<h3>Fotobox-Wohnwagen</h3>
+<div class="business-price-row"><span>400 Bilder</span><strong data-price-key="business.wohnwagen400">890 €</strong></div>
+<div class="business-price-row"><span>800 Bilder</span><strong data-price-key="business.wohnwagen800">990 €</strong></div>
+<ul>
+<li>eigener Fotoraum &amp; Blickfang</li>
+<li>Firmenlogo / individuelles Overlay</li>
+<li>Utensilienbox &amp; Versicherung</li>
+<li>30-Minuten-Reaktionsservice</li>
+</ul>
+</article>
+<article class="package hot business-compact-card">
+<span class="badge">Full House</span>
+<h3>Wohnwagen · alles drin</h3>
+<div class="business-price-single"><strong data-price-key="business.fullhouse800">999 €</strong><span>800 Bilder</span></div>
+<ul>
+<li>Greenscreen &amp; vorhandene Hintergründe</li>
+<li>bis zu 4 eigene Wunschmotive</li>
+<li>Firmenlogo, QR, Utensilienbox &amp; Versicherung</li>
+<li>30-Minuten-Reaktionsservice</li>
+</ul>
+</article>
+</div>
+<div class="business-service-strip">
+<strong>Im Businesspaket:</strong>
+      Firmenlogo / Overlay · Utensilienbox · Versicherung · Abgabetaschen · QR-Download · Aufbau &amp; Einweisung · 30-Minuten-Reaktionsservice
+    </div>
+<div class="business-bottom-row">
+<div>
+<p><strong>Erfahrung bei Firmenveranstaltungen u. a. für:</strong> fischer · Wacker · MEVA · Bosch · Kern · Voilap · EDEKA</p>
+<p class="muted"><strong>Regional betreut. Überregional vernetzt.</strong> Bei größeren oder parallelen Veranstaltungen können wir bei Bedarf auf erfahrene Kollegen aus dem Selfie-Box-Partnernetzwerk zurückgreifen.</p>
+</div>
+<a class="btn btn-primary business-main-cta" href="/fotobox-firmenfeier/">Alle Firmenpakete ansehen →</a>
+</div>
 </div>
 </section>
 <section class="section" id="preise">
 <div class="wrap">
 <div class="section-head reveal">
-<div><div class="eyebrow">Preise</div><h2>Klare Zahl.<br/>Klare Leistung.</h2></div>
-<p class="lead">Vom kompakten 299-€-Paket bis zum Full-House-Paket. So sieht der Kunde sofort, in welcher Größenordnung er liegt.</p>
+<div><div class="eyebrow">Privat- &amp; Eventpreise</div><h2>Klare Zahl.<br/>Klare Leistung.</h2></div>
+<p class="lead">Für Hochzeit, Geburtstag und private Feiern. Für Firmen gelten die Businesspakete im Abschnitt darüber.</p>
 </div>
 <div class="package-grid">
 <article class="package reveal"><span class="badge">Fotobox</span><div class="bigprice" data-price-key="privat.fotobox400">299 €</div><h3>400 Bilder · ohne Greenscreen</h3><div class="package-included">Im Preis enthalten</div><ul><li>klassische Fotobox</li><li>400 Ausdrucke</li><li>professioneller Sofortdruck</li><li>Abgabetaschen</li><li>ohne Greenscreen</li></ul><a class="btn btn-primary" href="#anfrage">Anfragen →</a></article>
