@@ -1,0 +1,99 @@
+
+
+name: IndexNow
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "**/*.html"
+      - "preise.js"
+      - "sitemap.xml"
+      - "robots.txt"
+      - ".github/workflows/indexnow.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  indexnow:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repository laden
+        uses: actions/checkout@v4
+
+      - name: Auf GitHub Pages warten
+        run: sleep 90
+
+      - name: Geänderte Seiten an IndexNow melden
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import json
+          import urllib.request
+          import urllib.error
+          import xml.etree.ElementTree as ET
+
+          HOST = "fotobox-regio.de"
+          BASE = f"https://{HOST}"
+          KEY_FILE = Path("2e93fd5f822542e89c23012661b0beab.txt")
+
+          if not KEY_FILE.exists():
+              raise SystemExit(f"IndexNow-Schlüsseldatei fehlt: {KEY_FILE}")
+
+          key = KEY_FILE.read_text(encoding="utf-8").strip()
+          if not key:
+              raise SystemExit("IndexNow-Schlüsseldatei ist leer.")
+
+          urls = {BASE + "/"}
+
+          sitemap = Path("sitemap.xml")
+          if sitemap.exists():
+              try:
+                  root = ET.parse(sitemap).getroot()
+                  for elem in root.iter():
+                      if elem.tag.endswith("loc") and elem.text:
+                          url = elem.text.strip()
+                          if url.startswith(BASE):
+                              urls.add(url)
+              except Exception as exc:
+                  print(f"Warnung: sitemap.xml konnte nicht vollständig gelesen werden: {exc}")
+
+          payload = {
+              "host": HOST,
+              "key": key,
+              "keyLocation": f"{BASE}/{KEY_FILE.name}",
+              "urlList": sorted(urls),
+          }
+
+          data = json.dumps(payload).encode("utf-8")
+          req = urllib.request.Request(
+              "https://api.indexnow.org/indexnow",
+              data=data,
+              headers={"Content-Type": "application/json; charset=utf-8"},
+              method="POST",
+          )
+
+          try:
+              with urllib.request.urlopen(req, timeout=30) as response:
+                  status = response.status
+                  body = response.read().decode("utf-8", errors="replace")
+          except urllib.error.HTTPError as exc:
+              status = exc.code
+              body = exc.read().decode("utf-8", errors="replace")
+          except Exception as exc:
+              raise SystemExit(f"IndexNow-Aufruf fehlgeschlagen: {exc}")
+
+          print(f"Gemeldete URLs: {len(payload['urlList'])}")
+          print(f"HTTP-Status: {status}")
+          if body:
+              print(body)
+
+          if status not in (200, 202):
+              raise SystemExit(f"IndexNow hat den Aufruf nicht akzeptiert (HTTP {status}).")
+          PY
+
